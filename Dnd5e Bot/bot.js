@@ -98,7 +98,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                 value: numberjacks(Dresult)
                             },
                             {
-                                name: "Dice Roles:",
+                                name: "Dice Rolls:",
                                 value: String(D)
                             },
                             {
@@ -129,12 +129,12 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                     Dresult = 0.00;
                     var i;
                     var D = new Array(NoD);
-                    var LowerRoles = new Array(D.length)
+                    var LowerRolls = new Array(D.length)
                     for (i = 0; i < NoD; i++) {
                         var a = Math.floor((Math.random() * Dd) + 1);
                         var b = Math.floor((Math.random() * Dd) + 1);
                         D[i] = Math.max(a, b);
-                        LowerRoles[i] = Math.min(a, b);
+                        LowerRolls[i] = Math.min(a, b);
                         Dresult = Dresult + D[i];
                     }
                 try{Dresult = Dresult + eval(args)}
@@ -146,7 +146,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                     } else {
                         var aM = ""
                     }
-                    var Out = aM + " @" + user + "\n :game_die:Result[" + Dresult + "]:game_die: \n Input[" + message.substring(2) + "] \n Dice[" + D + "] \n Lower Roles[" + LowerRoles + "]"
+                    var Out = aM + " @" + user + "\n :game_die:Result[" + Dresult + "]:game_die: \n Input[" + message.substring(2) + "] \n Dice[" + D + "] \n Lower Rolls[" + LowerRolls + "]"
                     bot.sendMessage({
                         to: channelID,
                         embed: {
@@ -157,8 +157,8 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                 value: Dresult
                             },
                             {
-                                name: "Dice Roles:",
-                                value: String(D) + ", " + LowerRoles
+                                name: "Dice Rolls:",
+                                value: String(D) + ", " + LowerRolls
                             },
                             {
                                 name: "Input:",
@@ -188,13 +188,13 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                     Dresult = 0.00;
                     var i;
                     var D = new Array(NoD);
-                    var HigherRoles = new Array(D.length)
+                    var HigherRolls = new Array(D.length)
                     for (i = 0; i < NoD; i++) {
                         var a = Math.floor((Math.random() * Dd) + 1);
                         var b = Math.floor((Math.random() * Dd) + 1);
                         D[i] = Math.min(a, b);
                         Dresult = Dresult + D[i];
-                        HigherRoles[i] = Math.max(a, b);
+                        HigherRolls[i] = Math.max(a, b);
                     }
                 try { Dresult = Dresult + eval(args) }
                 catch (err) { Dresult = "You did that wrong." }
@@ -205,7 +205,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                     } else {
                         var aM = ""
                     }
-                    var Out = aM + " @" + user + "\n :game_die:Result[" + Dresult + "]:game_die: \n Input[" + message.substring(2) + "] \n Dice[" + D + "] \n Higher Roles[" + HigherRoles + "]"
+                    var Out = aM + " @" + user + "\n :game_die:Result[" + Dresult + "]:game_die: \n Input[" + message.substring(2) + "] \n Dice[" + D + "] \n Higher Rolls[" + HigherRolls + "]"
                     bot.sendMessage({
                         to: channelID,
                         embed: {
@@ -216,8 +216,8 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                 value: Dresult
                             },
                             {
-                                name: "Dice Roles:",
-                                value: String(D) + ", " + HigherRoles
+                                name: "Dice Rolls:",
+                                value: String(D) + ", " + HigherRolls
                             },
                             {
                                 name: "Input:",
@@ -231,7 +231,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
             case "I":
                 bot.sendMessage({
                     to: channelID,
-                    message: "\n Welcome to Dice hoe MK.3 now with quick role just type " + "'!'" + " and Boom d20 role, also new punchy results, and many fixes"
+                    message: "\n Welcome to Dice hoe MK.3 now with quick roll just type " + "'!'" + " and Boom d20 roll, also new punchy results, and many fixes"
                 });
                 break;
 
@@ -276,13 +276,13 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                 });
                 break;
                 
-            case "": //Quick role
+            case "": //Quick roll
                 var D = Math.floor((Math.random() * 20) + 1);
                     bot.sendMessage({
                         to: channelID,
                         embed: {
                             color: 1530000,
-                            title: user + "'s D20 Role Results",
+                            title: user + "'s D20 Roll Results",
                             fields: [{
                                 name: "Total Result:",
                                 value: numberjacks(D)
@@ -290,10 +290,6 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                             ]
                         }
                     });
-        }
-
-    }
-});
                     var D = new Array(NoD);
                     for (i = 0; i < NoD; i++) {
                         D[i] = Math.floor((Math.random() * Dd) + 1);
@@ -324,7 +320,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                 value: Dresult
                             },
                             {
-                                name: "Dice Roles:",
+                                name: "Dice Rolls:",
                                 value: String(D)
                             },
                             {
@@ -355,12 +351,12 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                     Dresult = 0.00;
                     var i;
                     var D = new Array(NoD);
-                    var LowerRoles = new Array(D.length)
+                    var LowerRolls = new Array(D.length)
                     for (i = 0; i < NoD; i++) {
                         var a = Math.floor((Math.random() * Dd) + 1);
                         var b = Math.floor((Math.random() * Dd) + 1);
                         D[i] = Math.max(a, b);
-                        LowerRoles[i] = Math.min(a, b);
+                        LowerRolls[i] = Math.min(a, b);
                         Dresult = Dresult + D[i];
                     }
                 try{Dresult = Dresult + eval(args)}
@@ -372,7 +368,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                     } else {
                         var aM = ""
                     }
-                    var Out = aM + " @" + user + "\n :game_die:Result[" + Dresult + "]:game_die: \n Input[" + message.substring(2) + "] \n Dice[" + D + "] \n Lower Roles[" + LowerRoles + "]"
+                    var Out = aM + " @" + user + "\n :game_die:Result[" + Dresult + "]:game_die: \n Input[" + message.substring(2) + "] \n Dice[" + D + "] \n Lower Rolls[" + LowerRolls + "]"
                     bot.sendMessage({
                         to: channelID,
                         embed: {
@@ -383,8 +379,8 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                 value: Dresult
                             },
                             {
-                                name: "Dice Roles:",
-                                value: String(D) + ", " + LowerRoles
+                                name: "Dice Rolls:",
+                                value: String(D) + ", " + LowerRolls
                             },
                             {
                                 name: "Input:",
@@ -414,13 +410,13 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                     Dresult = 0.00;
                     var i;
                     var D = new Array(NoD);
-                    var HigherRoles = new Array(D.length)
+                    var HigherRolls = new Array(D.length)
                     for (i = 0; i < NoD; i++) {
                         var a = Math.floor((Math.random() * Dd) + 1);
                         var b = Math.floor((Math.random() * Dd) + 1);
                         D[i] = Math.min(a, b);
                         Dresult = Dresult + D[i];
-                        HigherRoles[i] = Math.max(a, b);
+                        HigherRolls[i] = Math.max(a, b);
                     }
                 try { Dresult = Dresult + eval(args) }
                 catch (err) { Dresult = "You did that wrong." }
@@ -431,7 +427,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                     } else {
                         var aM = ""
                     }
-                    var Out = aM + " @" + user + "\n :game_die:Result[" + Dresult + "]:game_die: \n Input[" + message.substring(2) + "] \n Dice[" + D + "] \n Higher Roles[" + HigherRoles + "]"
+                    var Out = aM + " @" + user + "\n :game_die:Result[" + Dresult + "]:game_die: \n Input[" + message.substring(2) + "] \n Dice[" + D + "] \n Higher Rolls[" + HigherRolls + "]"
                     bot.sendMessage({
                         to: channelID,
                         embed: {
@@ -442,8 +438,8 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                                 value: Dresult
                             },
                             {
-                                name: "Dice Roles:",
-                                value: String(D) + ", " + HigherRoles
+                                name: "Dice Rolls:",
+                                value: String(D) + ", " + HigherRolls
                             },
                             {
                                 name: "Input:",
@@ -457,7 +453,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
             case "I":
                 bot.sendMessage({
                     to: channelID,
-                    message: "\n Welcome to Dice hoe MK.2 now with native negitve numbers, new display and less Bardius swearing also LIMITED multiplication & divison \n Use '!R' to do a regular role !R2d8+5 -> Result[7] Dice[1,1] \n Use '!A' to role with advantage !A2d8+5 -> Result[9] Dice[2,2] Lower Dice[1,1] \n Use '!D' to role with disadvantage !D2d8+5 -> Result[7] Dice[1,1] Higher Dice[8,8]"
+                    message: "\n Welcome to Dice hoe MK.2 now with native negitve numbers, new display and less Bardius swearing also LIMITED multiplication & divison \n Use '!R' to do a regular roll !R2d8+5 -> Result[7] Dice[1,1] \n Use '!A' to roll with advantage !A2d8+5 -> Result[9] Dice[2,2] Lower Dice[1,1] \n Use '!D' to roll with disadvantage !D2d8+5 -> Result[7] Dice[1,1] Higher Dice[8,8]"
                 });
                 break;
 
