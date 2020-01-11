@@ -1,8 +1,11 @@
 {
-"name": "greeter-bot",
-"version": "1.0.0",
-"description": "A dnd bot for dice rolls",
-"main": "bot.js",
-"author": "Charlie Coyle",
-"dependencies" :  {}
+  "name": "greeter-bot",
+  "version": "1.0.0",
+  "description": "A dnd bot for dice rolls",
+  "main": "bot.js",
+  "author": "Charlie Coyle",
+  "dependencies": {
+    "discord.io": "^2.5.3",
+    "winston": "^3.2.1"
+  }
 }
