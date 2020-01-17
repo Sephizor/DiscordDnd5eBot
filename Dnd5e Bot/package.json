@@ -21,7 +21,7 @@
     "typescript": "^3.7.4"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && copy auth.json dist",
     "clean": "rimraf dist",
     "test": "mocha -r ts-node/register tests/**/*.spec.ts",
     "start": "tsc && copy auth.json dist && node ./dist/Main.js"
