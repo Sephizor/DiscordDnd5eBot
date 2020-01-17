@@ -35,6 +35,7 @@ const respondPrefix = '!';
 
 discordBot.on('message', (message: discord.Message) => {
     if(message.author.bot) return;
+    if(message.channel.type !== 'text') return;
 
     if(message.content.match(`^${respondPrefix}`)) {
         const outputMessage: MessageEmbedField[] = _messageHandler.handleMessage(message.content, logger);
