@@ -7,17 +7,18 @@ export default class DndBot {
 
     handleMessage(message: string, logger: winston.Logger) : MessageEmbedField[] {
         let cmd: ICommand | null = null;
+        let lowercaseMessage = message.toLowerCase();
         // Roll commands
-        if(message.match(/!$/)) {
+        if(lowercaseMessage.match(/!$/)) {
             cmd = new RollCommand('!r1d20', logger);
         }
         
-        else if(message.match(/![rad].*/)) {
-            cmd = new RollCommand(message, logger);
+        else if(lowercaseMessage.match(/![rad].*/)) {
+            cmd = new RollCommand(lowercaseMessage, logger);
         }
 
         // Skill checks
-        else if(message.match(/![A-Z]{1}[a-z]{2}[A-Z]{1}$/)) {
+        else if(lowercaseMessage.match(/![A-Z]{1}[a-z]{2}[A-Z]{1}$/)) {
 
         }
 

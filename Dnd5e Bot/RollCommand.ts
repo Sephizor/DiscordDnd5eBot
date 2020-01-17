@@ -28,7 +28,7 @@ export default class RollCommand implements ICommand {
 
     constructor(message: string, logger: Logger) {
         const rollRegex = /!([rad]) ?(\d+) ?d ?(\d+) ?([+-])? ?(\d+)?/g;
-        const rollMatches = rollRegex.exec(message.toLowerCase());
+        const rollMatches = rollRegex.exec(message);
 
         logger.verbose(`Entered constructor of ${RollCommand.name}`);
         if(rollMatches) {
