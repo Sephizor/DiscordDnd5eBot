@@ -5,7 +5,7 @@ type EmojiTable = {
 export default class Util {
 
     static emojiTable: EmojiTable = {
-        0: ':zero',
+        0: ':zero:',
         1: ':one:',
         2: ':two:',
         3: ':three:',
@@ -29,19 +29,16 @@ export default class Util {
 
     static convertEmojiToNumber(input: string): number {
         let output = '';
-        let regex = /(:.*:)+$/;
-        let matches = regex.exec(input);
-        if(matches !== null && matches.length > 0) {
-            matches.shift();
-            while(matches.length > 0) {
-                try {
-                    let currentEmoji = matches.shift()!;
-                    let idx = Object.values(this.emojiTable).indexOf(currentEmoji);
-                    output += Object.keys(this.emojiTable)[idx];
-                }
-                catch(e) {
-                    break;
-                }
+        let regex = /(:[a-z]+:)/g;
+        let match;
+        while((match = regex.exec(input)) !== null) {
+            try {
+                let currentEmoji = match[1];
+                let idx = Object.values(this.emojiTable).indexOf(currentEmoji);
+                output += Object.keys(this.emojiTable)[idx];
+            }
+            catch(e) {
+                break;
             }
         }
 
