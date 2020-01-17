@@ -96,6 +96,7 @@ export default class RollCommand implements ICommand {
         }
 
         const rollArray: DiceRoll[] = [];
+        let fields: MessageEmbedField[] = [];
 
         if(this._rollType !== RollType.NORMAL) {
             this._numDice *= 2;
@@ -118,30 +119,40 @@ export default class RollCommand implements ICommand {
             });
         }
 
-        let finalRoll: number;
+        let finalResult: number;
         let diceRolls = rollArray.map(x => x.roll);
+        let maxRoll: number;
+
         switch(this._rollType) {
             case RollType.ADVANTAGE:
-                finalRoll = rollArray.map(x => x.result).reduce((high, current) => {
+                maxRoll = Math.max(...diceRolls);
+                finalResult = rollArray.map(x => x.result).reduce((high, current) => {
                     return current > high ? current : high;
                 });
+                this.checkCriticals(maxRoll, fields);
                 break;
             case RollType.DISADVANTAGE:
-                finalRoll = rollArray.map(x => x.result).reduce((low, current) => {
+                maxRoll = Math.min(...diceRolls);
+                finalResult = rollArray.map(x => x.result).reduce((low, current) => {
                     return current < low ? current : low;
                 });
+                this.checkCriticals(maxRoll, fields);
                 break;
             default:
-                finalRoll = rollArray.map(x => x.result).reduce((t, c) => {
+                finalResult = rollArray.map(x => x.result).reduce((t, c) => {
                     return t + c;
                 });
+                if(this._numDice === 1 && this._dieSize === 20) {
+                    maxRoll = Math.max(...diceRolls);
+                    this.checkCriticals(maxRoll, fields);
+                }
                 break;
         }
 
-        return <MessageEmbedField[]>[
+        fields = fields.concat(<MessageEmbedField[]>[
             {
                 name: 'Result',
-                value: `${Util.convertNumberToEmoji(finalRoll)}`
+                value: `${Util.convertNumberToEmoji(finalResult)}`
             },
             {
                 name: 'Dice Roll(s)',
@@ -151,6 +162,33 @@ export default class RollCommand implements ICommand {
                 name: 'Input',
                 value: this.toString()
             }
-        ];
+        ]);
+
+        return fields;
+    }
+
+    private checkCriticals(maxRoll: number, fields: MessageEmbedField[]) {
+        if(this._dieSize === 20) {
+            if(maxRoll === 20) {
+                this.addCriticalField(fields);
+            }
+            else if(maxRoll === 1) {
+                this.addCriticalFailField(fields);
+            }
+        }
+    }
+
+    private addCriticalField(fields: MessageEmbedField[]) {
+        return fields.push(<MessageEmbedField>{
+            name: 'Critical!',
+            value: `NAT ${Util.convertNumberToEmoji(20)}`
+        });
+    }
+
+    private addCriticalFailField(fields: MessageEmbedField[]) {
+        return fields.push(<MessageEmbedField>{
+            name: 'Critical Fail!',
+            value: `NAT ${Util.convertNumberToEmoji(1)}`
+        });
     }
 }
