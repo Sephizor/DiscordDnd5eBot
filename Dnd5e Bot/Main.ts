@@ -31,17 +31,19 @@ discordBot.on('ready', () => {
 });
 
 const _messageHandler = new DndBot();
+const respondPrefix = '!';
 
 discordBot.on('message', (message: discord.Message) => {
     if(message.author.bot) return;
 
-    const outputMessage: MessageEmbedField[] = _messageHandler.handleMessage(message.content, logger);
-    
-    message.channel.send(new discord.RichEmbed(<discord.RichEmbedOptions>{
-        color: 1530000,
-        title: `${message.author.username}'s results`,
-        fields: outputMessage,
-    }));
+    if(message.content.match(`^${respondPrefix}`)) {
+        const outputMessage: MessageEmbedField[] = _messageHandler.handleMessage(message.content, logger);
+        message.channel.send(new discord.RichEmbed(<discord.RichEmbedOptions>{
+            color: 1530000,
+            title: `${message.author.username}'s results`,
+            fields: outputMessage,
+        }));
+    }
 });
 
 discordBot.login(auth.token);
