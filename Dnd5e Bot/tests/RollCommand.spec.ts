@@ -12,40 +12,27 @@ describe('Roll Command', () => {
 
     describe('execute', () => {
         describe('Error Handling of invalid input', () => {
+            
+            const errorOutput = [
+                {
+                    name: 'Error',
+                    value: 'You did that wrong'
+                }
+            ];
+
             it('should return error output if the supplied command is ridiculous', () => {
                 testee = new RollCommand('!rabcde12345', mockLogger.object);
-                expect(testee.execute()).to.deep.equal(
-                    [
-                        {
-                            name: 'Error',
-                            value: 'You did that wrong'
-                        }
-                    ]
-                );
+                expect(testee.execute()).to.deep.equal(errorOutput);
             });
 
             it('should return error output if supplied values are zero', () => {
                 testee = new RollCommand('!r0d0-0', mockLogger.object);
-                expect(testee.execute()).to.deep.equal(
-                    [
-                        {
-                            name: 'Error',
-                            value: 'You did that wrong'
-                        }
-                    ]
-                );
+                expect(testee.execute()).to.deep.equal(errorOutput);
             });
 
             it('should return error output if unknown roll type specified', () => {
                 testee = new RollCommand('!h2d10+6', mockLogger.object);
-                expect(testee.execute()).to.deep.equal(
-                    [
-                        {
-                            name: 'Error',
-                            value: 'You did that wrong'
-                        }
-                    ]
-                );
+                expect(testee.execute()).to.deep.equal(errorOutput);
             });
         });
 
