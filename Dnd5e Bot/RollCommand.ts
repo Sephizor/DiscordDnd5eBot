@@ -47,44 +47,6 @@ export default class RollCommand implements ICommand {
         }
     }
 
-    private validate(): boolean {
-        let isValid = this._numDice > 0 &&
-            this._dieSize > 0 &&
-            this._validDice.indexOf(this._dieSize) !== -1 &&
-            this._rollType !== RollType.UNKNOWN;
-
-        if(this._skillModifier > 0) {
-            return isValid && this._operator !== '';
-        }
-
-        return isValid;
-    }
-
-    private getRollType(type: string): RollType {
-        switch(type) {
-            case 'r':
-                return RollType.NORMAL;
-            case 'a':
-                return RollType.ADVANTAGE;
-            case 'd':
-                return RollType.DISADVANTAGE;
-            default:
-                return RollType.UNKNOWN;
-        }
-    }
-
-    private toString(): string {
-        let str = `${this._numDice}d${this._dieSize}`;
-        if(this._operator !== '' && this._skillModifier > 0) {
-            str += `${this._operator}${this._skillModifier}`;
-            if(this._rollType !== RollType.NORMAL) {
-                str += ` with ${this._rollType.toString().toLowerCase()}`;
-            }
-        }
-
-        return str;
-    }
-
     public execute(): MessageEmbedField[] {
         if(!this.validate()) {
             return <MessageEmbedField[]>[
@@ -165,6 +127,44 @@ export default class RollCommand implements ICommand {
         ]);
 
         return fields;
+    }
+
+    private validate(): boolean {
+        let isValid = this._numDice > 0 &&
+            this._dieSize > 0 &&
+            this._validDice.indexOf(this._dieSize) !== -1 &&
+            this._rollType !== RollType.UNKNOWN;
+
+        if(this._skillModifier > 0) {
+            return isValid && this._operator !== '';
+        }
+
+        return isValid;
+    }
+
+    private getRollType(type: string): RollType {
+        switch(type) {
+            case 'r':
+                return RollType.NORMAL;
+            case 'a':
+                return RollType.ADVANTAGE;
+            case 'd':
+                return RollType.DISADVANTAGE;
+            default:
+                return RollType.UNKNOWN;
+        }
+    }
+
+    private toString(): string {
+        let str = `${this._numDice}d${this._dieSize}`;
+        if(this._operator !== '' && this._skillModifier > 0) {
+            str += `${this._operator}${this._skillModifier}`;
+            if(this._rollType !== RollType.NORMAL) {
+                str += ` with ${this._rollType.toString().toLowerCase()}`;
+            }
+        }
+
+        return str;
     }
 
     private checkCriticals(maxRoll: number, fields: MessageEmbedField[]) {
