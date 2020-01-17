@@ -40,7 +40,7 @@ discordBot.on('message', (message: discord.Message) => {
         const outputMessage: MessageEmbedField[] = _messageHandler.handleMessage(message.content, logger);
         message.channel.send(new discord.RichEmbed(<discord.RichEmbedOptions>{
             color: 1530000,
-            title: `${message.author.username}'s results`,
+            title: `${message.member.displayName}'s results`,
             fields: outputMessage,
         }));
     }
