@@ -21,7 +21,12 @@ export default class DndBot {
             return cmd.execute();
         }
 
-        throw new Error('Not implemented');
+        return <MessageEmbedField[]>[
+            {
+                name: 'Error',
+                value: `There was no command registered to handle the input: "${message}"`
+            }
+        ];
     }
 
 }
