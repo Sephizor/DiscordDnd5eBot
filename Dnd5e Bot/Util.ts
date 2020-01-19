@@ -28,8 +28,8 @@ export default class Util {
     }
 
     static convertEmojiToNumber(input: string): number {
+        const regex = /(:[a-z]+:)/g;
         let output = '';
-        let regex = /(:[a-z]+:)/g;
         let match;
         while((match = regex.exec(input)) !== null) {
             try {
