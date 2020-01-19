@@ -5,6 +5,7 @@ import RollCommand from "./commands/RollCommand";
 import ICommand from "./commands/ICommand";
 import HelpCommand from "./commands/HelpCommand";
 import UnknownCommand from "./commands/UnknownCommand";
+import CreateCharacterCommand from "./commands/CreateCharacterCommand";
 
 export default class DndBot {
 
@@ -21,9 +22,9 @@ export default class DndBot {
             cmd = new RollCommand(lowercaseMessage, logger);
         }
 
-        // Skill checks
-        else if(lowercaseMessage.match(/^[A-Z]{1}[a-z]{2}[A-Z]{1}$/)) {
-
+        // Create new character
+        else if(lowercaseMessage.match(/^newcharacter$/)) {
+            cmd = new CreateCharacterCommand();
         }
 
         // Help command

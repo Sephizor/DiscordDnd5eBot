@@ -1,10 +1,10 @@
 # Introduction
 This is a discord bot for running D&D 5e campaigns written in typescript.
 
-The token in auth.json is a fake token and will not work as-is. To run this, you will need to create your own discord application and bot under the [Discord developer portal](https://discordapp.com/developers/applications/) and replace the token with your own. You will then need to invite the bot to your server by visiting the URL generated under the OAuth2 tab in the discord developers UI when you tick the "Bot" checkbox.
+The token in settings.json is blank and will not work as-is. To run this, you will need to create your own discord application and bot under the [Discord developer portal](https://discordapp.com/developers/applications/) and replace the token with your own. You will then need to invite the bot to your server by visiting the URL generated under the OAuth2 tab in the discord developers UI when you tick the "Bot" checkbox.
 
 <aside class="warning">
-    If forking this repository, please ensure that you do not commit your token in auth.json as this may allow anyone to immitate your bot.
+    If forking this repository, please ensure that you do not commit your token in settings.json as this may allow anyone to immitate your bot.
 </aside>
 
 # Current features

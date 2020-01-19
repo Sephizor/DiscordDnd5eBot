@@ -21,11 +21,11 @@
     "typescript": "^3.7.4"
   },
   "scripts": {
-    "build": "tsc && copy auth.json dist",
-    "dockerbuild": "tsc && copy auth.json dist && docker build . -t sythiri-dnd-bot",
+    "build": "tsc && copy settings.json dist",
+    "dockerbuild": "tsc && copy settings.json dist && docker build . -t sythiri-dnd-bot",
     "clean": "rimraf dist",
     "test": "mocha -r ts-node/register tests/**/*.spec.ts",
-    "start": "tsc && copy auth.json dist && node ./dist/Main.js",
+    "start": "tsc && copy settings.json dist && node ./dist/Main.js",
     "startdocker": "docker run -d -it --name dndbot sythiri-dnd-bot:latest",
     "watch": "tsc -w"
   }
