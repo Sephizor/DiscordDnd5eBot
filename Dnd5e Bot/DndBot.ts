@@ -1,9 +1,9 @@
 import winston = require("winston");
 import { MessageEmbedField } from "discord.js";
 
-import RollCommand from "./RollCommand";
-import ICommand from "./Command";
-import HelpCommand from "./HelpCommand";
+import RollCommand from "./commands/RollCommand";
+import ICommand from "./commands/ICommand";
+import HelpCommand from "./commands/HelpCommand";
 
 export default class DndBot {
 

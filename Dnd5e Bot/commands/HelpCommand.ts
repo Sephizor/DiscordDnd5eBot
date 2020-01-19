@@ -1,6 +1,6 @@
 import { MessageEmbedField } from "discord.js";
 
-import ICommand from "./Command";
+import ICommand from "./ICommand";
 
 export default class HelpCommand implements ICommand {
 

@@ -3,7 +3,7 @@ import 'mocha';
 import { Mock } from 'typemoq';
 import { Logger } from 'winston';
 
-import RollCommand from '../RollCommand';
+import RollCommand from '../commands/RollCommand';
 import Util from '../Util';
 
 describe('Roll Command', () => {

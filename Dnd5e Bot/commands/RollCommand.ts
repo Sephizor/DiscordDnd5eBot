@@ -1,8 +1,8 @@
 import { Logger } from 'winston';
 import { MessageEmbedField } from 'discord.js';
 
-import Util from "./Util";
-import ICommand from "./Command";
+import Util from "../Util";
+import ICommand from "./ICommand";
 
 interface DiceRoll {
     roll: number,
