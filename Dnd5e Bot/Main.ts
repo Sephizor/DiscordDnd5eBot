@@ -36,7 +36,7 @@ discordBot.on('ready', () => {
 });
 
 const _messageHandler = new DndBot();
-const respondPrefix = '+';
+const respondPrefix = '!';
 
 discordBot.on('message', (message: Message) => {
     if(message.author.bot) return;
