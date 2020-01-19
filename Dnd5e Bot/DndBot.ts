@@ -9,7 +9,7 @@ import UnknownCommand from "./commands/UnknownCommand";
 export default class DndBot {
 
     handleMessage(message: string, logger: winston.Logger) : MessageEmbedField[] {
-        let lowercaseMessage = message.toLowerCase();
+        const lowercaseMessage = message.toLowerCase();
         let cmd: ICommand = new UnknownCommand(lowercaseMessage);
 
         // Roll commands
