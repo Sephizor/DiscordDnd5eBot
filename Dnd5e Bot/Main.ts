@@ -1,9 +1,14 @@
-import * as discord from 'discord.js';
 import winston = require('winston');
+import {
+    Client,
+    MessageEmbedField,
+    RichEmbedOptions,
+    RichEmbed,
+    Message
+} from 'discord.js';
 const auth = require('./auth.json');
 
 import DndBot from './DndBot';
-import { MessageEmbedField } from 'discord.js';
 
 // Configure logger settings
 const logger = winston.createLogger({
@@ -14,7 +19,7 @@ const logger = winston.createLogger({
                     all: true
                 })
             ),
-            level: 'info',
+            level: 'verbose',
         })
     ],
     exitOnError: false
@@ -23,7 +28,7 @@ const logger = winston.createLogger({
 logger.verbose('Logger initialised');
 
 // Initialize Discord Bot
-const discordBot = new discord.Client();
+const discordBot = new Client();
 
 discordBot.on('ready', () => {
     logger.info('Connected');
@@ -31,15 +36,15 @@ discordBot.on('ready', () => {
 });
 
 const _messageHandler = new DndBot();
-const respondPrefix = '!';
+const respondPrefix = '+';
 
-discordBot.on('message', (message: discord.Message) => {
+discordBot.on('message', (message: Message) => {
     if(message.author.bot) return;
     if(message.channel.type !== 'text') return;
 
-    if(message.content.match(`^${respondPrefix}`)) {
-        const outputMessage: MessageEmbedField[] = _messageHandler.handleMessage(message.content, logger);
-        message.channel.send(new discord.RichEmbed(<discord.RichEmbedOptions>{
+    if(message.content.match(`^[${respondPrefix}]`)) {
+        const outputMessage: MessageEmbedField[] = _messageHandler.handleMessage(message.content.substring(respondPrefix.length, message.content.length), logger);
+        message.channel.send(new RichEmbed(<RichEmbedOptions>{
             color: 1530000,
             title: `${message.member.displayName}'s results`,
             fields: outputMessage,

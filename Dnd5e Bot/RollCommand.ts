@@ -27,7 +27,7 @@ export default class RollCommand implements ICommand {
     private _validDice: number[] = [2, 4, 6, 8, 10, 12, 20, 100];
 
     constructor(message: string, logger: Logger) {
-        const rollRegex = /!([rad]) ?(\d+) ?d ?(\d+) ?([+-])? ?(\d+)?/g;
+        const rollRegex = /^([rad]) ?(\d+) ?d ?(\d+) ?([+-])? ?(\d+)?/g;
         const rollMatches = rollRegex.exec(message);
 
         logger.verbose(`Entered constructor of ${RollCommand.name}`);

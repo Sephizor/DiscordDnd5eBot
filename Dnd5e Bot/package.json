@@ -26,6 +26,7 @@
     "clean": "rimraf dist",
     "test": "mocha -r ts-node/register tests/**/*.spec.ts",
     "start": "tsc && copy auth.json dist && node ./dist/Main.js",
-    "startdocker": "docker run -d -it --name dndbot sythiri-dnd-bot:latest"
+    "startdocker": "docker run -d -it --name dndbot sythiri-dnd-bot:latest",
+    "watch": "tsc -w"
   }
 }
