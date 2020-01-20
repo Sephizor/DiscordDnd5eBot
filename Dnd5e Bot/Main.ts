@@ -19,7 +19,7 @@ const logger = winston.createLogger({
                     all: true
                 })
             ),
-            level: 'verbose',
+            level: settings.logLevel,
         })
     ],
     exitOnError: false
