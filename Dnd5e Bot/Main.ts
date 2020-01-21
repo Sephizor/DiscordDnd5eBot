@@ -42,12 +42,24 @@ discordBot.on('message', (message: Message) => {
     if(message.channel.type !== 'text') return;
 
     if(message.content.match(`^[${settings.messagePrefix}]`)) {
-        const outputMessage: MessageEmbedField[] = _messageHandler.handleMessage(message.content.substring(settings.messagePrefix.length, message.content.length), logger);
-        message.channel.send(new RichEmbed(<RichEmbedOptions>{
-            color: 1530000,
-            title: `${message.member.displayName}'s results`,
-            fields: outputMessage,
-        }));
+        try {
+            const outputMessage: MessageEmbedField[] = _messageHandler.handleMessage(message.content.substring(settings.messagePrefix.length, message.content.length), logger);
+            message.channel.send(new RichEmbed(<RichEmbedOptions> {
+                color: 1530000,
+                title: `${message.member.displayName}'s results`,
+                fields: outputMessage,
+            }));
+        }
+        catch(e) {
+            message.channel.send(new RichEmbed(<RichEmbedOptions> {
+                color: 153000,
+                title: `${message.member.displayName}'s results`,
+                fields: <MessageEmbedField[]>[{
+                    name: 'Error',
+                    value: e.message
+                }]
+            }));
+        }
     }
 });
 
