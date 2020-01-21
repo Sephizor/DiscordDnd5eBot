@@ -39,17 +39,17 @@ describe('Roll Command', () => {
         describe('Normal rolls', () => {
             it('should return successful bot output fields if input is valid with no operator or skill modifier', () => {
                 testee = new RollCommand('r2d20', mockLogger.object);
-                expect(testee.execute().length).to.equal(3);
+                expect(testee.execute().map(x => x.name)).to.include('Dice Roll(s)');
             });
     
             it('should return successful bot output fields if input is valid with operator and skill modifier', () => {
                 testee = new RollCommand('r2d20+4', mockLogger.object);
-                expect(testee.execute().length).to.equal(3);
+                expect(testee.execute().map(x => x.name)).to.include('Dice Roll(s)');
             });
     
             it('should return successful bot output fields if input is valid with operator with a skill modifier of zero', () => {
                 testee = new RollCommand('r2d20+0', mockLogger.object);
-                expect(testee.execute().length).to.equal(3);
+                expect(testee.execute().map(x => x.name)).to.include('Dice Roll(s)');
             });
 
             it('should return a number between 1 and 20 for a normal d20 roll', () => {
@@ -66,28 +66,29 @@ describe('Roll Command', () => {
         describe('Advantage rolls', () => {
             it('should return successful bot output fields if input is valid with no operator or skill modifier', () => {
                 testee = new RollCommand('a2d20', mockLogger.object);
-                expect(testee.execute().length).to.equal(3);
+                expect(testee.execute().map(x => x.name)).to.include('Dice Roll(s)');
             });
     
             it('should return successful bot output fields if input is valid with operator and skill modifier', () => {
                 testee = new RollCommand('a2d20+4', mockLogger.object);
-                expect(testee.execute().length).to.equal(3);
+                expect(testee.execute().map(x => x.name)).to.include('Dice Roll(s)');
             });
     
             it('should return successful bot output fields if input is valid with operator with a skill modifier of zero', () => {
                 testee = new RollCommand('a2d20+0', mockLogger.object);
-                expect(testee.execute().length).to.equal(3);
+                expect(testee.execute().map(x => x.name)).to.include('Dice Roll(s)');
             });
 
             it('should return two numbers between 1 and 20 for a normal d20 roll', () => {
                 testee = new RollCommand('a1d20', mockLogger.object);
-                expect(testee.execute()[1].value).to.contain(',');
+                expect(testee.execute().map(x => x.value)).to.match(/.*,.*/)
             });
 
             it('should choose the higher of two numbers in a normal d20 advantage roll', () => {
                 testee = new RollCommand('a1d20', mockLogger.object);
                 const result = testee.execute();
-                expect(Util.convertEmojiToNumber(result[0].value)).not.to.equal('');
+                const fieldNumber = result.length === 3 ? 0 : 1;
+                expect(Util.convertEmojiToNumber(result[fieldNumber].value)).not.to.equal('');
             });
 
             it('should handle rolling a lot of dice', () => {
@@ -99,22 +100,22 @@ describe('Roll Command', () => {
         describe('Disdvantage rolls', () => {
             it('should return successful bot output fields if input is valid with no operator or skill modifier', () => {
                 testee = new RollCommand('d2d20', mockLogger.object);
-                expect(testee.execute().length).to.equal(3);
+                expect(testee.execute().map(x => x.name)).to.include('Dice Roll(s)');
             });
     
             it('should return successful bot output fields if input is valid with operator and skill modifier', () => {
                 testee = new RollCommand('d2d20+4', mockLogger.object);
-                expect(testee.execute().length).to.equal(3);
+                expect(testee.execute().map(x => x.name)).to.include('Dice Roll(s)');
             });
     
             it('should return successful bot output fields if input is valid with operator with a skill modifier of zero', () => {
                 testee = new RollCommand('d2d20+0', mockLogger.object);
-                expect(testee.execute().length >= 3);
+                expect(testee.execute().map(x => x.name)).to.include('Dice Roll(s)');
             });
 
             it('should return two numbers between 1 and 20 for a normal d20 roll', () => {
                 testee = new RollCommand('d1d20', mockLogger.object);
-                expect(testee.execute()[1].value).to.contain(',');
+                expect(testee.execute().map(x => x.value)).to.match(/.*,.*/);
             });
 
             it('should handle rolling a lot of dice', () => {
