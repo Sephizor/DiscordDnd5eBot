@@ -58,7 +58,7 @@ discordBot.on('message', async (message: Message) => {
         catch(e) {
             message.channel.send(new RichEmbed(<RichEmbedOptions> {
                 color: 153000,
-                title: `${message.member.displayName}'s results`,
+                title: `${addressName}'s results`,
                 fields: <MessageEmbedField[]>[{
                     name: 'Error',
                     value: e.message
