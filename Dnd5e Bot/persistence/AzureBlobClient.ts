@@ -1,4 +1,4 @@
-import { IStorageClient } from "./IStorageClient";
+import IStorageClient from "./IStorageClient";
 
 export default class AzureBlobClient implements IStorageClient {
 

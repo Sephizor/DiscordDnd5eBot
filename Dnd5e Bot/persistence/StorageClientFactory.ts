@@ -1,6 +1,6 @@
 import path from 'path';
 
-import { IStorageClient } from "./IStorageClient";
+import IStorageClient from "./IStorageClient";
 import AzureBlobClient from "./AzureBlobClient";
 import FileStorageClient from "./FileStorageClient";
 import Settings from '../Settings';
