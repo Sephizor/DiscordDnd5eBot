@@ -23,8 +23,8 @@ export default class DndBot {
         }
 
         // Create new character
-        else if(lowercaseMessage.match(/^newcharacter$/)) {
-            cmd = new CreateCharacterCommand();
+        else if(lowercaseMessage.match(/^newcharacter .*/)) {
+            cmd = new CreateCharacterCommand(lowercaseMessage);
         }
 
         // Help command
