@@ -39,7 +39,18 @@ export default class AzureBlobClient implements IStorageClient {
     }
 
     async fetch(fileName: string): Promise<string> {
-        throw new Error("Method not implemented.");
+        if(!this.validateFilename(fileName)) {
+            throw new Error('Invalid character name');
+        }
+        
+        try {
+            const containerClient = this._client.getContainerClient(this._containerName);
+            const blobClient = await containerClient.getBlockBlobClient(fileName);
+            return (await blobClient.downloadToBuffer()).toString();
+        }
+        catch(e) {
+            throw new Error('An error occurred while retrieving character data');
+        }
     }
 
 }
