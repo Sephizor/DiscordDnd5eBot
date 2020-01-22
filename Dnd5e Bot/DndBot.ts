@@ -8,6 +8,7 @@ import UnknownCommand from "./commands/UnknownCommand";
 import CreateCharacterCommand from "./commands/CreateCharacterCommand";
 import SelectCharacterCommand from "./commands/SelectCharacterCommand";
 import { ICharacter } from "./Character";
+import StatRoll from "./commands/StatRoll";
 
 interface CharacterMapping {
     userId: string;
@@ -43,6 +44,18 @@ export default class DndBot {
         // Select character
         else if(lowercaseMessage.match(/^selectcharacter .*/)) {
             cmd = new SelectCharacterCommand(message, userId);
+        }
+
+        else if(lowercaseMessage.match(/^[a-z]{3,4}[cs][ad]?$/)) {
+            const index = this._characterMap.map(x => x.userId).indexOf(userId);
+            if(index !== -1) {
+                const char = this._characterMap[index].activeCharacter;
+                const diceRoll = StatRoll.getDiceRoll(lowercaseMessage, char);
+                cmd = new RollCommand(diceRoll, logger);
+            }
+            else {
+                throw new Error('You must have created and selected a character before rolling skill checks');
+            }
         }
 
         // Help command

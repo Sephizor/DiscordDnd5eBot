@@ -10,12 +10,12 @@ export interface ICharacter {
     charisma: number;
 
     // Saving throws
-    strSave: number;
-    dexSave: number;
-    conSave: number;
-    intSave: number;
-    wisSave: number;
-    chaSave: number;
+    strsave: number;
+    dexsave: number;
+    consave: number;
+    intsave: number;
+    wissave: number;
+    chasave: number;
 
     // Stat modifiers
     acrobatics: number;
