@@ -1,5 +1,4 @@
 import { BlobServiceClient, StorageSharedKeyCredential } from '@azure/storage-blob';
-import { Readable } from 'stream';
 
 import IStorageClient from "./IStorageClient";
 
