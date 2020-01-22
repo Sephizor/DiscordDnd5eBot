@@ -6,9 +6,10 @@ import {
     RichEmbed,
     Message
 } from 'discord.js';
-const settings = require('./settings.json');
+const settings: Settings = require('./settings.json');
 
 import DndBot from './DndBot';
+import Settings from './Settings';
 
 // Configure logger settings
 const logger = winston.createLogger({
