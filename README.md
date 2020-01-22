@@ -41,10 +41,6 @@ Skill checks can be performed by using the first three letters of the skill name
 !persc - Persuasion Check
 !intc - Intelligence Check
 
-!intis - Intimidation Save
-!percs - Perception Save
-!perfs - Performance Save
-!perss - Persuasion Save
 !ints - Intelligence Save
 </pre>
 
