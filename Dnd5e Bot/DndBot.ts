@@ -32,7 +32,7 @@ export default class DndBot {
             cmd = new RollCommand(`r1d20`, logger);
         }
         
-        else if(lowercaseMessage.match(/^[rad].*/)) {
+        else if(lowercaseMessage.match(/^[rad]\d.*/)) {
             cmd = new RollCommand(lowercaseMessage, logger);
         }
 
