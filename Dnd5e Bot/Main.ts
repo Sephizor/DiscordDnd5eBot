@@ -40,7 +40,7 @@ const _messageHandler = new DndBot();
 
 discordBot.on('message', async (message: Message) => {
     if(message.author.bot) return;
-    if(message.channel.type !== 'text') return;
+    const addressName = message.channel.type !== 'text' ? message.author.username : message.member.displayName
 
     if(message.content.match(`^[${settings.messagePrefix}]`)) {
         try {
@@ -51,7 +51,7 @@ discordBot.on('message', async (message: Message) => {
             );
             message.channel.send(new RichEmbed(<RichEmbedOptions> {
                 color: 1530000,
-                title: `${message.member.displayName}'s results`,
+                title: `${addressName}'s results`,
                 fields: outputMessage,
             }));
         }
