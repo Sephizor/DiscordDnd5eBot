@@ -58,6 +58,18 @@ export default class DndBot {
             }
         }
 
+        else if(lowercaseMessage === 'ini') {
+            const index = this._characterMap.map(x => x.userId).indexOf(userId);
+            if(index !== -1) {
+                const char = this._characterMap[index].activeCharacter;
+                const diceRoll = `r1d20+${char.initiative}`;
+                cmd = new RollCommand(diceRoll, logger);
+            }
+            else {
+                throw new Error('You must have created and selected a character before rolling initiative checks');
+            }
+        }
+
         // Help command
         else if(lowercaseMessage.match(/^help$/)) {
             cmd = new HelpCommand();
