@@ -12,7 +12,7 @@ export default class HelpCommand implements ICommand {
 
     private buildHelpText() {
         this._helpText =
-            'For help, please read the "usage" section in my README on [Github](https://github.com/Sephizor/DiscordDnd5eBot/tree/typescriptRewrite)';
+            'For help, please read the "usage" section in my README on [Github](https://github.com/Sephizor/DiscordDnd5eBot)';
     }
 
     async execute(): Promise<MessageEmbedField[]> {
