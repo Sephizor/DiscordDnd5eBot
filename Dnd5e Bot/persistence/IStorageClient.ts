@@ -1,4 +1,4 @@
 export default interface IStorageClient {
-    save(json: string, fileName: string): boolean;
-    fetch(fileName: string): string;
+    save(json: string, fileName: string): Promise<boolean>;
+    fetch(fileName: string): Promise<string>;
 }

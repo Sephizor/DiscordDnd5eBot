@@ -16,7 +16,8 @@ export default class StorageClientFactory {
                 if(!settings.blobStorage) {
                     throw new Error('Character creation is not configured for this bot');
                 }
-                return new AzureBlobClient(settings.blobStorage.connectionString, settings.blobStorage.containerName);
+                return new AzureBlobClient(settings.blobStorage.accountName,
+                    settings.blobStorage.accountKey, settings.blobStorage.containerName);
             default:
                 if(!settings.fileStorage) {
                     throw new Error('Character creation is not configured for this bot');

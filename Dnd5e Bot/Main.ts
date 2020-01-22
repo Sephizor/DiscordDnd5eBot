@@ -38,13 +38,13 @@ discordBot.on('ready', () => {
 
 const _messageHandler = new DndBot();
 
-discordBot.on('message', (message: Message) => {
+discordBot.on('message', async (message: Message) => {
     if(message.author.bot) return;
     if(message.channel.type !== 'text') return;
 
     if(message.content.match(`^[${settings.messagePrefix}]`)) {
         try {
-            const outputMessage: MessageEmbedField[] = _messageHandler.handleMessage(message.content.substring(settings.messagePrefix.length, message.content.length), logger);
+            const outputMessage: MessageEmbedField[] = await _messageHandler.handleMessage(message.content.substring(settings.messagePrefix.length, message.content.length), logger);
             message.channel.send(new RichEmbed(<RichEmbedOptions> {
                 color: 1530000,
                 title: `${message.member.displayName}'s results`,

@@ -15,20 +15,24 @@ export default class CreateCharacterCommand implements ICommand {
         this._storageClient = new StorageClientFactory().getInstance();
     }
 
-    execute(): MessageEmbedField[] {
+    async execute(): Promise<MessageEmbedField[]> {
         const characterRegex = /^newcharacter (.*)/g
         const characterMatches = characterRegex.exec(this._message);
         if(characterMatches) {
             const character = Character.fromJSON(characterMatches[1]);
-            this._storageClient.save(Character.serialise(character), character.name);
+            const isSaved = await this._storageClient.save(Character.serialise(character), character.name);
+            if(!isSaved) {
+                throw new Error('An error occurred while saving the character data');
+            }
+            return <MessageEmbedField[]>[
+                {
+                    name: "Result",
+                    value: `Character ${character.name}} created successfully`
+                }
+            ];
         }
 
-        return <MessageEmbedField[]>[
-            {
-                name: "Result",
-                value: "Success"
-            }
-        ];
+        throw new Error('Invalid syntax for new character');
     }
 
 }

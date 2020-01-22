@@ -9,7 +9,7 @@ import CreateCharacterCommand from "./commands/CreateCharacterCommand";
 
 export default class DndBot {
 
-    handleMessage(message: string, logger: winston.Logger) : MessageEmbedField[] {
+    async handleMessage(message: string, logger: winston.Logger) : Promise<MessageEmbedField[]> {
         const lowercaseMessage = message.toLowerCase();
         let cmd: ICommand = new UnknownCommand(lowercaseMessage);
 

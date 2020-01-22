@@ -15,7 +15,7 @@ export default class HelpCommand implements ICommand {
             'For help, please read the "usage" section in my README on [Github](https://github.com/Sephizor/DiscordDnd5eBot/tree/typescriptRewrite)';
     }
 
-    execute(): MessageEmbedField[] {
+    async execute(): Promise<MessageEmbedField[]> {
         return <MessageEmbedField[]> [
             {
                 name: 'Commands',

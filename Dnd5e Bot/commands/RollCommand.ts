@@ -47,7 +47,7 @@ export default class RollCommand implements ICommand {
         }
     }
 
-    public execute(): MessageEmbedField[] {
+    async execute(): Promise<MessageEmbedField[]> {
         if(!this.validate()) {
             return <MessageEmbedField[]>[
                 {

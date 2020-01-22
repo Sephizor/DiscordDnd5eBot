@@ -1,5 +1,6 @@
 interface _BlobStorage {
-    connectionString: string;
+    accountName: string;
+    accountKey: string;
     containerName: string;
 }
 

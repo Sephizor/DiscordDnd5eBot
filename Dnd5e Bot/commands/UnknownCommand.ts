@@ -10,7 +10,7 @@ export default class UnknownCommand implements ICommand {
         this._message = message;
     }
 
-    execute(): MessageEmbedField[] {
+    async execute(): Promise<MessageEmbedField[]> {
         return <MessageEmbedField[]>[
             {
                 name: 'Error',
