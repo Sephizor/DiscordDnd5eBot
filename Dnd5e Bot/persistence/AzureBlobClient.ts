@@ -45,11 +45,14 @@ export default class AzureBlobClient implements IStorageClient {
         
         try {
             const containerClient = this._client.getContainerClient(this._containerName);
-            const blobClient = await containerClient.getBlockBlobClient(fileName);
-            return (await blobClient.downloadToBuffer()).toString();
+            const blobClient = await containerClient.getBlockBlobClient(fileName.toLowerCase());
+            if((await blobClient.exists())) {
+                return (await blobClient.downloadToBuffer()).toString();
+            }
+            return '';
         }
         catch(e) {
-            throw new Error('An error occurred while retrieving character data');
+            throw new Error('An error occurred while retrieving data from storage');
         }
     }
 

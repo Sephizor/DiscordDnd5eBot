@@ -44,7 +44,11 @@ discordBot.on('message', async (message: Message) => {
 
     if(message.content.match(`^[${settings.messagePrefix}]`)) {
         try {
-            const outputMessage: MessageEmbedField[] = await _messageHandler.handleMessage(message.content.substring(settings.messagePrefix.length, message.content.length), logger);
+            const outputMessage: MessageEmbedField[] = await _messageHandler.handleMessage(
+                message.content.substring(settings.messagePrefix.length, message.content.length),
+                message.author.id,
+                logger
+            );
             message.channel.send(new RichEmbed(<RichEmbedOptions> {
                 color: 1530000,
                 title: `${message.member.displayName}'s results`,
