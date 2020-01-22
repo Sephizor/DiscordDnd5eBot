@@ -19,7 +19,7 @@ export interface ICharacter {
 
     // Stat modifiers
     acrobatics: number;
-    animalHandling: number;
+    animalhandling: number;
     arcana: number;
     athletics: number;
     deception: number;
@@ -33,7 +33,7 @@ export interface ICharacter {
     performance: number;
     persuasion: number;
     religion: number;
-    sleightOfHand: number;
+    sleightofhand: number;
     stealth: number;
     survival: number;
 

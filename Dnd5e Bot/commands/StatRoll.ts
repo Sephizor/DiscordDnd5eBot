@@ -65,7 +65,7 @@ export default class StatRoll {
                     diceRoll += character.acrobatics;
                     break;
                 case 'ani':
-                    diceRoll += character.animalHandling;
+                    diceRoll += character.animalhandling;
                     break;
                 case 'arc':
                     diceRoll += character.arcana;
@@ -107,7 +107,7 @@ export default class StatRoll {
                     diceRoll += character.religion;
                     break;
                 case 'sle':
-                    diceRoll += character.sleightOfHand;
+                    diceRoll += character.sleightofhand;
                     break;
                 case 'ste':
                     diceRoll += character.stealth;

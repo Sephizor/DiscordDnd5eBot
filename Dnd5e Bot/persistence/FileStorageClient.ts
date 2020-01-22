@@ -26,16 +26,20 @@ export default class FileStorageClient implements IStorageClient {
 
     async save(json: string, fileName: string): Promise<boolean> {
         if(!this.validateFilename(fileName)) {
-            throw new Error('Invalid character name');
+            throw new Error('Invalid input');
         }
         fs.writeFileSync(`${this._rootDirectory}${path.sep}${fileName}`, json);
         return fs.existsSync(`${this._rootDirectory}${path.sep}${fileName}`);
     }
     async fetch(fileName: string): Promise<string> {
         if(!this.validateFilename(fileName)) {
-            throw new Error('Invalid character name');
+            throw new Error('Invalid input');
         }
-        return fs.readFileSync(`${this._rootDirectory}${path.sep}${fileName}`, 'utf8');
+        const file = `${this._rootDirectory}${path.sep}${fileName}`;
+        if(!fs.existsSync(file)) {
+            return '';
+        }
+        return fs.readFileSync(file, 'utf8');
     }
 
 }
