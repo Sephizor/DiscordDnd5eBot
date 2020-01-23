@@ -25,7 +25,10 @@ export default class DndBot {
     constructor() {
         this._characterMap = [];
 
-        this._storageClient = new StorageClientFactory().getInstance();
+        try {
+            this._storageClient = new StorageClientFactory().getInstance();
+        }
+        catch(e) {}
         
         setTimeout(async () => {
             try {
@@ -34,7 +37,10 @@ export default class DndBot {
             catch(e) {}
         }, 0);
         setInterval(async () => {
-            await this._storageClient!.save(JSON.stringify(this._characterMap), 'characterMap.json');
+            try {
+                await this._storageClient!.save(JSON.stringify(this._characterMap), 'characterMap.json');
+            }
+            catch(e) {}
         }, 3 * 60 * 1000);
     }
 
