@@ -36,7 +36,7 @@ discordBot.on('ready', () => {
     logger.info(`Logged in as: ${discordBot.user.tag}`);
 });
 
-const _messageHandler = new DndBot();
+const _messageHandler = new DndBot(logger);
 
 discordBot.on('message', async (message: Message) => {
     if(message.author.bot) return;
@@ -46,8 +46,7 @@ discordBot.on('message', async (message: Message) => {
         try {
             const outputMessage: MessageEmbedField[] = await _messageHandler.handleMessage(
                 message.content.substring(settings.messagePrefix.length, message.content.length),
-                message.author.id,
-                logger
+                message.author.id
             );
             message.channel.send(new RichEmbed(<RichEmbedOptions> {
                 color: 1530000,

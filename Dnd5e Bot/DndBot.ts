@@ -21,10 +21,11 @@ export default class DndBot {
 
     private _characterMap: CharacterMapping[];
     private _storageClient: IStorageClient | undefined;
+    private _logger: winston.Logger;
 
-    constructor() {
+    constructor(logger: winston.Logger) {
         this._characterMap = [];
-
+        this._logger = logger;
         try {
             this._storageClient = new StorageClientFactory().getInstance();
         }
@@ -32,29 +33,29 @@ export default class DndBot {
         
         setTimeout(async () => {
             try {
-                this._characterMap = JSON.parse(await this._storageClient!.fetch('characterMap.json'));
+                this._characterMap = JSON.parse(await this._storageClient!.fetch('charactermap.json'));
             }
             catch(e) {}
         }, 0);
         setInterval(async () => {
             try {
-                await this._storageClient!.save(JSON.stringify(this._characterMap), 'characterMap.json');
+                await this._storageClient!.save(JSON.stringify(this._characterMap), 'charactermap.json');
             }
             catch(e) {}
         }, 3 * 60 * 1000);
     }
 
-    async handleMessage(message: string, userId: string, logger: winston.Logger) : Promise<MessageEmbedField[]> {
+    async handleMessage(message: string, userId: string) : Promise<MessageEmbedField[]> {
         const lowercaseMessage = message.toLowerCase();
         let cmd: ICommand = new UnknownCommand(lowercaseMessage);
 
         // Roll commands
         if(lowercaseMessage.match(/^$/)) {
-            cmd = new RollCommand(`r1d20`, logger);
+            cmd = new RollCommand(`r1d20`, this._logger);
         }
         
         else if(lowercaseMessage.match(/^[rad]\d.*/)) {
-            cmd = new RollCommand(lowercaseMessage, logger);
+            cmd = new RollCommand(lowercaseMessage, this._logger);
         }
 
         // Create new character
@@ -72,7 +73,7 @@ export default class DndBot {
             if(index !== -1) {
                 const char = this._characterMap[index].activeCharacter;
                 const diceRoll = StatRoll.getDiceRoll(lowercaseMessage, char);
-                cmd = new RollCommand(diceRoll, logger);
+                cmd = new RollCommand(diceRoll, this._logger);
             }
             else {
                 throw new Error('You must have created and selected a character before rolling skill checks');
@@ -84,7 +85,7 @@ export default class DndBot {
             if(index !== -1) {
                 const char = this._characterMap[index].activeCharacter;
                 const diceRoll = `r1d20+${char.initiative}`;
-                cmd = new RollCommand(diceRoll, logger);
+                cmd = new RollCommand(diceRoll, this._logger);
             }
             else {
                 throw new Error('You must have created and selected a character before rolling initiative checks');
