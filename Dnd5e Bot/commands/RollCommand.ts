@@ -4,11 +4,6 @@ import { MessageEmbedField } from 'discord.js';
 import Util from "../Util";
 import ICommand from "./ICommand";
 
-interface DiceRoll {
-    roll: number,
-    result: number
-}
-
 enum RollType {
     NORMAL = 'normal',
     ADVANTAGE = 'advantage',
@@ -57,7 +52,7 @@ export default class RollCommand implements ICommand {
             ];
         }
 
-        const rollArray: DiceRoll[] = [];
+        const rollArray: number[] = [];
         let fields: MessageEmbedField[] = [];
 
         if(this._rollType !== RollType.NORMAL) {
@@ -66,49 +61,45 @@ export default class RollCommand implements ICommand {
 
         for(let i = 0; i < this._numDice; i++) {
             const dieRoll = Math.floor((Math.random() * this._dieSize) + 1);
-            let result = dieRoll;
-            if(this._skillModifier > 0) {
-                if(this._operator === '+') {
-                    result += this._skillModifier;
-                }
-                else if(this._operator === '-') {
-                    result -= this._skillModifier;
-                }
-            }
-            rollArray.push({
-                roll: dieRoll,
-                result: result
-            });
+            rollArray.push(dieRoll);
         }
 
         let finalResult: number;
-        let diceRolls = rollArray.map(x => x.roll);
         let maxRoll: number;
 
         switch(this._rollType) {
             case RollType.ADVANTAGE:
-                maxRoll = Math.max(...diceRolls);
-                finalResult = rollArray.map(x => x.result).reduce((high, current) => {
+                maxRoll = Math.max(...rollArray);
+                finalResult = rollArray.reduce((high, current) => {
                     return current > high ? current : high;
                 });
                 this.checkCriticals(maxRoll, fields);
                 break;
             case RollType.DISADVANTAGE:
-                maxRoll = Math.min(...diceRolls);
-                finalResult = rollArray.map(x => x.result).reduce((low, current) => {
+                maxRoll = Math.min(...rollArray);
+                finalResult = rollArray.reduce((low, current) => {
                     return current < low ? current : low;
                 });
                 this.checkCriticals(maxRoll, fields);
                 break;
             default:
-                finalResult = rollArray.map(x => x.result).reduce((t, c) => {
+                finalResult = rollArray.reduce((t, c) => {
                     return t + c;
                 });
                 if(this._numDice === 1 && this._dieSize === 20) {
-                    maxRoll = Math.max(...diceRolls);
+                    maxRoll = Math.max(...rollArray);
                     this.checkCriticals(maxRoll, fields);
                 }
                 break;
+        }
+
+        if(this._skillModifier > 0) {
+            if(this._operator === '+') {
+                finalResult += this._skillModifier;
+            }
+            else if(this._operator === '-') {
+                finalResult -= this._skillModifier;
+            }
         }
 
         fields = fields.concat(<MessageEmbedField[]>[
@@ -118,7 +109,7 @@ export default class RollCommand implements ICommand {
             },
             {
                 name: 'Dice Roll(s)',
-                value: `${diceRolls.join(', ')}`
+                value: `${rollArray.join(', ')}`
             },
             {
                 name: 'Input',
