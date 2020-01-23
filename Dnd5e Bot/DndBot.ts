@@ -9,6 +9,8 @@ import CreateCharacterCommand from "./commands/CreateCharacterCommand";
 import SelectCharacterCommand from "./commands/SelectCharacterCommand";
 import { ICharacter } from "./Character";
 import StatRoll from "./commands/StatRoll";
+import StorageClientFactory from "./persistence/StorageClientFactory";
+import IStorageClient from "./persistence/IStorageClient";
 
 interface CharacterMapping {
     userId: string;
@@ -18,9 +20,22 @@ interface CharacterMapping {
 export default class DndBot {
 
     private _characterMap: CharacterMapping[];
+    private _storageClient: IStorageClient | undefined;
 
     constructor() {
         this._characterMap = [];
+
+        this._storageClient = new StorageClientFactory().getInstance();
+        
+        setTimeout(async () => {
+            try {
+                this._characterMap = JSON.parse(await this._storageClient!.fetch('characterMap.json'));
+            }
+            catch(e) {}
+        }, 0);
+        setInterval(async () => {
+            await this._storageClient!.save(JSON.stringify(this._characterMap), 'characterMap.json');
+        }, 3 * 60 * 1000);
     }
 
     async handleMessage(message: string, userId: string, logger: winston.Logger) : Promise<MessageEmbedField[]> {
@@ -43,7 +58,7 @@ export default class DndBot {
 
         // Select character
         else if(lowercaseMessage.match(/^selectcharacter .*/)) {
-            cmd = new SelectCharacterCommand(message, userId);
+            cmd = new SelectCharacterCommand(lowercaseMessage, userId);
         }
 
         else if(lowercaseMessage.match(/^[a-z]{3,4}[cs][ad]?$/)) {
