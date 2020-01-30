@@ -59,12 +59,12 @@ export default class DndBot {
         }
 
         // Create new character
-        else if(lowercaseMessage.match(/^newcharacter .*/)) {
+        else if(lowercaseMessage.match(/^newcharacter|nc .*/)) {
             cmd = new CreateCharacterCommand(lowercaseMessage, userId);
         }
 
         // Select character
-        else if(lowercaseMessage.match(/^selectcharacter .*/)) {
+        else if(lowercaseMessage.match(/^selectcharacter|sc .*/)) {
             cmd = new SelectCharacterCommand(lowercaseMessage, userId);
         }
 

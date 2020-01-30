@@ -23,7 +23,7 @@ export default class SelectCharacterCommand implements ICommand {
     }
 
     async execute(): Promise<MessageEmbedField[]> {
-        const selectCharRegex = /^selectcharacter ([a-zA-Z]+)$/;
+        const selectCharRegex = /^selectcharacter|sc ([a-zA-Z]+)$/;
         const charName = selectCharRegex.exec(this._message);
         if(charName) {
             const characterName = charName[1];

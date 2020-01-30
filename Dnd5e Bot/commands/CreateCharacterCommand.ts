@@ -18,7 +18,7 @@ export default class CreateCharacterCommand implements ICommand {
     }
 
     async execute(): Promise<MessageEmbedField[]> {
-        const characterRegex = /^newcharacter (.*)/g
+        const characterRegex = /^newcharacter|nc (.*)/g
         const characterMatches = characterRegex.exec(this._message);
         if(characterMatches) {
             const character = Character.fromJSON(characterMatches[1]);
