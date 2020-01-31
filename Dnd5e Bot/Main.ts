@@ -11,6 +11,7 @@ const settings: Settings = require('./settings.json');
 
 import DndBot from './DndBot';
 import Settings from './Settings';
+import BotWeb from './web/WebMain';
 
 // Configure logger settings
 const logger = winston.createLogger({
@@ -26,8 +27,6 @@ const logger = winston.createLogger({
     ],
     exitOnError: false
 });
-
-const app = express();
 
 logger.verbose('Logger initialised');
 
@@ -73,9 +72,12 @@ discordBot.on('message', async (message: Message) => {
 discordBot.login(settings.token);
 logger.verbose(discordBot);
 
-app.get('/activechars', (req, res) => {
-    res.setHeader('Content-Type', 'application/json');
-    res.send(_messageHandler.getActiveCharacters());
-});
-
-app.listen(8000);
+if(settings.webEnabled) {
+    const app = BotWeb(_messageHandler);
+    if(!settings.webPort) {
+        logger.error('Failed to start web server as port was not specified in config');
+    }
+    else {
+        app.listen(settings.webPort);
+    }
+}
