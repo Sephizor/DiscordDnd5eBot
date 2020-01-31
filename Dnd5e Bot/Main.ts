@@ -6,6 +6,7 @@ import {
     RichEmbed,
     Message
 } from 'discord.js';
+import express from 'express';
 const settings: Settings = require('./settings.json');
 
 import DndBot from './DndBot';
@@ -25,6 +26,8 @@ const logger = winston.createLogger({
     ],
     exitOnError: false
 });
+
+const app = express();
 
 logger.verbose('Logger initialised');
 
@@ -68,5 +71,11 @@ discordBot.on('message', async (message: Message) => {
 });
 
 discordBot.login(settings.token);
-
 logger.verbose(discordBot);
+
+app.get('/activechars', (req, res) => {
+    res.setHeader('Content-Type', 'application/json');
+    res.send(_messageHandler.getActiveCharacters());
+});
+
+app.listen(8000);

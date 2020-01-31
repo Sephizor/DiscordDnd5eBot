@@ -45,6 +45,10 @@ export default class DndBot {
         }, 3 * 60 * 1000);
     }
 
+    getActiveCharacters(): CharacterMapping[] {
+        return this._characterMap;
+    }
+
     async handleMessage(message: string, userId: string) : Promise<MessageEmbedField[]> {
         const lowercaseMessage = message.toLowerCase();
         let cmd: ICommand = new UnknownCommand(lowercaseMessage);
