@@ -79,16 +79,27 @@ describe('Roll Command', () => {
                 expect((await testee.execute()).map(x => x.name)).to.include('Dice Roll(s)');
             });
 
-            it('should return two numbers between 1 and 20 for a normal d20 roll', async () => {
+            it('should return two numbers for a d20 advantage roll', async () => {
                 testee = new RollCommand('a1d20', mockLogger.object);
-                expect((await testee.execute()).map(x => x.value)).to.match(/.*,.*/)
+                
+                const result = await testee.execute();
+                const diceRollField = result.length === 3 ? 1 : 2;
+                const results = result[diceRollField].value.split(',');
+
+                expect(results.length).to.be.greaterThan(0);
             });
 
             it('should choose the higher of two numbers in a normal d20 advantage roll', async () => {
                 testee = new RollCommand('a1d20', mockLogger.object);
+
                 const result = await testee.execute();
-                const fieldNumber = result.length === 3 ? 0 : 1;
-                expect(Util.convertEmojiToNumber(result[fieldNumber].value)).not.to.equal('');
+                const resultField = result.length === 3 ? 0 : 1;
+                const diceRollField = result.length === 3 ? 1 : 2;
+                const results = result[diceRollField].value.split(',');
+                const maxRoll = Math.max(...(results.map(x => parseInt(x))));
+
+                expect(results.length).to.equal(2);
+                expect(result[resultField].value).to.equal(Util.convertNumberToEmoji(maxRoll));
             });
 
             it('should handle rolling a lot of dice', async () => {
@@ -113,9 +124,27 @@ describe('Roll Command', () => {
                 expect((await testee.execute()).map(x => x.name)).to.include('Dice Roll(s)');
             });
 
-            it('should return two numbers between 1 and 20 for a normal d20 roll', async () => {
+            it('should return two numbers for a d20 disadvantage roll', async () => {
                 testee = new RollCommand('d1d20', mockLogger.object);
-                expect((await testee.execute()).map(x => x.value)).to.match(/.*,.*/);
+
+                const result = await testee.execute();
+                const diceRollField = result.length === 3 ? 1 : 2;
+                const results = result[diceRollField].value.split(',');
+
+                expect(results.length).to.be.greaterThan(0);
+            });
+
+            it('should choose the lower of two numbers in a normal d20 disadvantage roll', async () => {
+                testee = new RollCommand('d1d20', mockLogger.object);
+
+                const result = await testee.execute();
+                const resultField = result.length === 3 ? 0 : 1;
+                const diceRollField = result.length === 3 ? 1 : 2;
+                const results = result[diceRollField].value.split(',');
+                const minRoll = Math.min(...(results.map(x => parseInt(x))));
+
+                expect(results.length).to.equal(2);
+                expect(result[resultField].value).to.equal(Util.convertNumberToEmoji(minRoll));
             });
 
             it('should handle rolling a lot of dice', async () => {
