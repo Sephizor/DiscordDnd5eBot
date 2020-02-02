@@ -1,5 +1,11 @@
 {
     "token": "",
     "messagePrefix": "!",
-    "logLevel": "info"
+    "logLevel": "info",
+    "webEnabled": false,
+    "discordApi": {
+        "clientId": "",
+        "clientSecret": "",
+        "baseUri": ""
+    }
 }
