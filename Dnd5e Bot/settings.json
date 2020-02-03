@@ -1,6 +1,5 @@
 {
     "token": "",
     "messagePrefix": "!",
-    "logLevel": "info",
-    "webEnabled": "false",
+    "logLevel": "info"
 }
