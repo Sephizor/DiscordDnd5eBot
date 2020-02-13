@@ -31,6 +31,8 @@ Create a new character (<b>with modifiers!</b> Do not use raw skill numbers):
 
 Select a character: `!selectcharacter samplecharacter`
 
+Update your selected character's stats: `!updatecharacter { "strength": 3, "wisdom": 1, "dexsave": 2 }`
+
 Roll initiative: `!ini`
 
 Skill checks can be performed by using the first three letters of the skill name, plus either 'c' (for check) or 's' (for save), plus optionally 'a' (for advantage) or 'd' (for disadvantage) with the following exceptions:
