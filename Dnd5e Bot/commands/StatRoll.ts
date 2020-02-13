@@ -12,6 +12,10 @@ export default class StatRoll {
         let checkType: CheckType;
         let advantageType: string = '';
         if(stat === 'per') {
+            if(message.length === 4) {
+                throw new Error(`Perception requires a four letter stat name. Try again with 'percc' or 'percs'`);
+            }
+
             stat = message.substring(0, 4);
             checkType = message.charAt(4) === 'c' ? CheckType.CHECK : CheckType.SAVE;
             if(message.length === 6) {
