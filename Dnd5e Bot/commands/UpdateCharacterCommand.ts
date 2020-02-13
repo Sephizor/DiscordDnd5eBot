@@ -17,12 +17,12 @@ export default class UpdateCharacterCommand implements ICommand {
     }
 
     async execute(): Promise<MessageEmbedField[]> {
-        const regex = /^updatecharacter|uc (.*)$/g;
+        const regex = /^(updatecharacter|uc) (.*)$/g;
         const json = regex.exec(this._message);
         if(json) {
             let newStats: Object;
             try {
-                newStats = JSON.parse(json[1]);
+                newStats = JSON.parse(json[2]);
             }
             catch(e) {
                 throw new Error('Invalid JSON specified for update character');
