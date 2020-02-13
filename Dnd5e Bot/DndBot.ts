@@ -11,6 +11,7 @@ import { ICharacter } from "./Character";
 import StatRoll from "./commands/StatRoll";
 import StorageClientFactory from "./persistence/StorageClientFactory";
 import IStorageClient from "./persistence/IStorageClient";
+import UpdateStatCommand from "./commands/UpdateCharacterCommand";
 
 interface CharacterMapping {
     userId: string;
@@ -70,6 +71,21 @@ export default class DndBot {
         // Select character
         else if(lowercaseMessage.match(/^selectcharacter|sc .*/)) {
             cmd = new SelectCharacterCommand(lowercaseMessage, userId);
+        }
+
+        else if(lowercaseMessage.match(/^updatecharacter|uc .*/)) {
+            const index = this._characterMap.map(x => x.userId).indexOf(userId);
+            if(index !== -1) {
+                if(this._storageClient !== undefined) {
+                    cmd = new UpdateStatCommand(lowercaseMessage, this._characterMap[index].activeCharacter, userId);
+                }
+                else {
+                    throw new Error('This command is disabled');
+                }
+            }
+            else {
+                throw new Error('You must create and/or select a character first');
+            }
         }
 
         else if(lowercaseMessage.match(/^[a-z]{3,4}[cs][ad]?$/)) {

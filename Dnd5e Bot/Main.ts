@@ -6,12 +6,10 @@ import {
     RichEmbed,
     Message
 } from 'discord.js';
-import express from 'express';
 const settings: Settings = require('./settings.json');
 
 import DndBot from './DndBot';
 import Settings from './Settings';
-import BotWeb from './web/WebMain';
 
 // Configure logger settings
 const logger = winston.createLogger({
@@ -71,13 +69,3 @@ discordBot.on('message', async (message: Message) => {
 
 discordBot.login(settings.token);
 logger.verbose(discordBot);
-
-if(settings.webEnabled) {
-    const app = BotWeb(_messageHandler);
-    if(!settings.webPort) {
-        logger.error('Failed to start web server as port was not specified in config');
-    }
-    else {
-        app.listen(settings.webPort);
-    }
-}

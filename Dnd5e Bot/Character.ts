@@ -44,6 +44,42 @@ export interface ICharacter {
 
 export default class Character {
 
+    public static ValidStats = [
+        'name',
+        'strength',
+        'dexterity',
+        'constitution',
+        'intelligence',
+        'wisdom',
+        'charisma',
+        'strsave',
+        'dexsave',
+        'consave',
+        'intsave',
+        'wissave',
+        'chasave',
+        'acrobatics',
+        'animalhandling',
+        'arcana',
+        'athletics',
+        'deception',
+        'history',
+        'insight',
+        'intimidation',
+        'investigation',
+        'medicine',
+        'nature',
+        'perception',
+        'performance',
+        'persuasion',
+        'religion',
+        'sleightofhand',
+        'stealth',
+        'survival',
+        'initiative',
+        'armorClass'
+    ];
+
     public static serialise(char: ICharacter): string {
         return JSON.stringify(char);
     }

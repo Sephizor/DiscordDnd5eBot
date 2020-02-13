@@ -18,10 +18,10 @@ export default class CreateCharacterCommand implements ICommand {
     }
 
     async execute(): Promise<MessageEmbedField[]> {
-        const characterRegex = /^newcharacter|nc (.*)/g
+        const characterRegex = /^(newcharacter|nc) (.*)/g
         const characterMatches = characterRegex.exec(this._message);
         if(characterMatches) {
-            const character = Character.fromJSON(characterMatches[1]);
+            const character = Character.fromJSON(characterMatches[2]);
             const isSaved = await this._storageClient.save(Character.serialise(character), `${this._owner}-${character.name}.json`);
             if(!isSaved) {
                 throw new Error('An error occurred while saving the character data');
