@@ -1,7 +1,7 @@
 import {MessageEmbedField} from 'discord.js';
 
 import ICommand from "./ICommand";
-import Character from '../Character';
+import { Character } from '../Character';
 import CreateCharacterCommand from './CreateCharacterCommand';
 
 export default class UpdateCharacterCommand implements ICommand {

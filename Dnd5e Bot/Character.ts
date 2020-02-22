@@ -42,7 +42,7 @@ export interface ICharacter {
     armorClass: number;
 }
 
-export default class Character {
+export class Character {
 
     public static ValidStats = [
         'name',
@@ -77,7 +77,7 @@ export default class Character {
         'stealth',
         'survival',
         'initiative',
-        'armorClass'
+        'armorclass'
     ];
 
     public static serialise(char: ICharacter): string {
@@ -85,17 +85,23 @@ export default class Character {
     }
 
     public static fromJSON(json: string): ICharacter {
+        let character: ICharacter;
         try {
-            const character = <ICharacter>(JSON.parse(json));
-            for(let key in character) {
-                if(this.ValidStats.indexOf(key) !== -1) {
-                    throw new Error('Invalid stat defined in character json');
-                }
-            }
-            return character;
+            character = <ICharacter>(JSON.parse(json));
         }
         catch(e) {
             throw new Error('Invalid JSON specified for character');
         }
+
+        if(Object.keys(character).length < this.ValidStats.length) {
+            throw new Error('All stats must be specified when creating a character');
+        }
+        for(let key in character) {
+            if(this.ValidStats.indexOf(key) === -1) {
+                throw new Error(`Invalid stat defined in character json: ${key}`);
+            }
+        }
+        return character;
+        
     }
 }

@@ -3,7 +3,7 @@ import { MessageEmbedField } from 'discord.js';
 import ICommand from "./ICommand";
 import IStorageClient from "../persistence/IStorageClient";
 import StorageClientFactory from "../persistence/StorageClientFactory";
-import Character, { ICharacter } from '../Character';
+import { Character, ICharacter } from '../Character';
 
 export default class SelectCharacterCommand implements ICommand {
 
