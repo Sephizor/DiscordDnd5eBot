@@ -86,7 +86,13 @@ export default class Character {
 
     public static fromJSON(json: string): ICharacter {
         try {
-            return <ICharacter>(JSON.parse(json));
+            const character = <ICharacter>(JSON.parse(json));
+            for(let key in character) {
+                if(this.ValidStats.indexOf(key) !== -1) {
+                    throw new Error('Invalid stat defined in character json');
+                }
+            }
+            return character;
         }
         catch(e) {
             throw new Error('Invalid JSON specified for character');
