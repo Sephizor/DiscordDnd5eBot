@@ -38,7 +38,7 @@ discordBot.on('ready', () => {
 
 const _messageHandler = new DndBot(logger);
 
-discordBot.on('message', async (message: Message) => {
+async function handleMessage(message: Message) {
     if(message.author.bot) return;
     const addressName = message.channel.type !== 'text' ? message.author.username : message.member.displayName
 
@@ -64,6 +64,13 @@ discordBot.on('message', async (message: Message) => {
                 }]
             }));
         }
+    }
+}
+
+discordBot.on('message', handleMessage);
+discordBot.on('messageUpdate', async (o, n) => {
+    if(o !== n) {
+        return await handleMessage(n);
     }
 });
 
