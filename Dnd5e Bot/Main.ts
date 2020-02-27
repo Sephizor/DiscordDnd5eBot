@@ -75,4 +75,3 @@ discordBot.on('messageUpdate', async (o, n) => {
 });
 
 discordBot.login(settings.token);
-logger.verbose(discordBot);

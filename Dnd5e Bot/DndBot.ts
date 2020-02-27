@@ -11,7 +11,7 @@ import { ICharacter } from "./Character";
 import StatRoll from "./commands/StatRoll";
 import StorageClientFactory from "./persistence/StorageClientFactory";
 import IStorageClient from "./persistence/IStorageClient";
-import UpdateStatCommand from "./commands/UpdateCharacterCommand";
+import UpdateCharacterCommand from "./commands/UpdateCharacterCommand";
 
 interface CharacterMapping {
     userId: string;
@@ -51,6 +51,8 @@ export default class DndBot {
     }
 
     async handleMessage(message: string, userId: string) : Promise<MessageEmbedField[]> {
+        this._logger.verbose(`Handling input ${message}`);
+
         const lowercaseMessage = message.toLowerCase();
         let cmd: ICommand = new UnknownCommand(lowercaseMessage);
 
@@ -77,7 +79,7 @@ export default class DndBot {
             const index = this._characterMap.map(x => x.userId).indexOf(userId);
             if(index !== -1) {
                 if(this._storageClient !== undefined) {
-                    cmd = new UpdateStatCommand(lowercaseMessage, this._characterMap[index].activeCharacter, userId);
+                    cmd = new UpdateCharacterCommand(lowercaseMessage, this._characterMap[index].activeCharacter, userId);
                 }
                 else {
                     throw new Error('This command is disabled');
@@ -118,6 +120,9 @@ export default class DndBot {
         }
 
         const result = await cmd.execute();
+
+        this._logger.verbose(`Command result: ${JSON.stringify(result)}`);
+
         if(cmd instanceof SelectCharacterCommand) {
             const char = (<SelectCharacterCommand>cmd).getCharacter();
             if(char !== null) {
