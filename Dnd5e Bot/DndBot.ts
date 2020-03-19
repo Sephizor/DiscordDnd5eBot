@@ -50,6 +50,20 @@ export default class DndBot {
         return this._characterMap;
     }
 
+    getCharacterName(userId: string): string | null {
+        if(this._storageClient !== null) {
+            const charIdx = this._characterMap.map(x => x.userId).indexOf(userId);
+            if(charIdx !== -1) {
+                let charName = this._characterMap[charIdx].activeCharacter.name;
+                const firstLetter = charName[0].toUpperCase();
+                charName = firstLetter + charName.substring(1, charName.length);
+                return charName;
+            }
+        }
+
+        return null;
+    }
+
     async handleMessage(message: string, userId: string) : Promise<MessageEmbedField[]> {
         this._logger.verbose(`Handling input ${message}`);
 

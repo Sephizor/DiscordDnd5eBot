@@ -48,9 +48,13 @@ async function handleMessage(message: Message) {
                 message.content.substring(settings.messagePrefix.length, message.content.length),
                 message.author.id
             );
+
+            const charName = _messageHandler.getCharacterName(message.author.id);
+            const title = (charName !== null ? charName : addressName) + "'s results";
+
             message.channel.send(new RichEmbed(<RichEmbedOptions> {
                 color: 1530000,
-                title: `${addressName}'s results`,
+                title: title,
                 fields: outputMessage,
             }));
         }
