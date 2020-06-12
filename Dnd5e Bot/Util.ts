@@ -19,7 +19,9 @@ export default class Util {
 
     static convertNumberToEmoji(num: number) : string {
         let output = '';
-        const numAsString = num.toString();
+        if(num < 0) output += '-';
+        num -= num*2;
+        const numAsString = '' + num;
         for (let i = 0; i < numAsString.length; i++) {
             let idx = Object.keys(this.emojiTable).indexOf(numAsString[i]);
             output += this.emojiTable[idx];

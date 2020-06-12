@@ -44,6 +44,10 @@ describe('Util', () => {
             expect(Util.convertNumberToEmoji(9)).to.equal(':nine:');
         });
 
+        it('should convert - to -', () => {
+            expect(Util.convertNumberToEmoji(-9)).to.equal('-:nine:');
+        });
+
         it('should convert multiple digits', () => {
             expect(Util.convertNumberToEmoji(1234)).to.equal(':one::two::three::four:');
         });
