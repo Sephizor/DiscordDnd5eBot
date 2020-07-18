@@ -14,6 +14,7 @@ import IStorageClient from "./persistence/IStorageClient";
 import UpdateCharacterCommand from "./commands/UpdateCharacterCommand";
 import { ServerMap } from "./persistence/ServerMap";
 import InitiativeCommand from "./commands/InitiativeCommand";
+import GetCharacterCommand from "./commands/GetCharacterCommand";
 
 export default class DndBot {
 
@@ -97,7 +98,7 @@ export default class DndBot {
         // Create new character
         else if(lowercaseMessage.match(/^newcharacter|nc .*/)) {
             if(serverId === undefined) {
-                throw new Error('You must use this command in a channel on the server which your character belongs to.')
+                throw new Error('You must use this command in a channel on the server which your character belongs to')
             }
             cmd = new CreateCharacterCommand(lowercaseMessage, userId, serverId);
         }
@@ -105,14 +106,14 @@ export default class DndBot {
         // Select character
         else if(lowercaseMessage.match(/^selectcharacter|sc .*/)) {
             if(serverId === undefined) {
-                throw new Error('You must use this command in a channel on the server which your character belongs to.')
+                throw new Error('You must use this command in a channel on the server which your character belongs to')
             }
             cmd = new SelectCharacterCommand(lowercaseMessage, userId, serverId);
         }
 
         else if(lowercaseMessage.match(/^updatecharacter|uc .*/)) {
             if(serverId === undefined) {
-                throw new Error('You must use this command in a channel on the server which your character belongs to.')
+                throw new Error('You must use this command in a channel on the server which your character belongs to')
             }
             const char = this.getActiveCharacter(userId, serverId);
             if(char !== null) {
@@ -128,9 +129,19 @@ export default class DndBot {
             }
         }
 
+        else if(lowercaseMessage.match(/^getcharacter|gc/)) {
+            if(serverId === undefined) {
+                throw new Error('You must use this command in a channel on the server which your character belongs to')
+            }
+            const char = this.getActiveCharacter(userId, serverId);
+            if(char !== null) {
+                cmd = new GetCharacterCommand(char);
+            }
+        }
+
         else if(lowercaseMessage.match(/^[a-z]{3,4}[cs][ad]?$/)) {
             if(serverId === undefined) {
-                throw new Error('You must use this command in a channel on the server which your character belongs to.')
+                throw new Error('You must use this command in a channel on the server which your character belongs to')
             }
             const char = this.getActiveCharacter(userId, serverId);
             if(char !== null) {
@@ -144,7 +155,7 @@ export default class DndBot {
 
         else if(lowercaseMessage.match(/^init .*/)) {
             if(serverId === undefined) {
-                throw new Error('You must use this command in a channel on the server which your character belongs to.')
+                throw new Error('You must use this command in a channel on the server which your character belongs to')
             }
             cmd = new InitiativeCommand(message, userId, serverId, this.getActiveCharacter(userId, serverId));
         }
