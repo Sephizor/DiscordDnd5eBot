@@ -137,6 +137,9 @@ export default class DndBot {
             if(char !== null) {
                 cmd = new GetCharacterCommand(char);
             }
+            else {
+                throw new Error('You must have created and selected a character before getting character data');
+            }
         }
 
         else if(lowercaseMessage.match(/^[a-z]{3,4}[cs][ad]?$/)) {
