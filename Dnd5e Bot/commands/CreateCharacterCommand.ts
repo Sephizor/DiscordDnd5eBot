@@ -10,10 +10,12 @@ export default class CreateCharacterCommand implements ICommand {
     private _storageClient: IStorageClient;
     private _message: string;
     private _owner: string;
+    private _serverId: string;
 
-    constructor(message: string, owner: string) {
+    constructor(message: string, owner: string, serverId: string) {
         this._message = message;
         this._owner = owner;
+        this._serverId = serverId;
         this._storageClient = new StorageClientFactory().getInstance();
     }
 
@@ -22,7 +24,7 @@ export default class CreateCharacterCommand implements ICommand {
         const characterMatches = characterRegex.exec(this._message);
         if(characterMatches) {
             const character = Character.fromJSON(characterMatches[2]);
-            const isSaved = await this._storageClient.save(Character.serialise(character), `${this._owner}-${character.name}.json`);
+            const isSaved = await this._storageClient.save(Character.serialise(character), `server-${this._serverId}/${this._owner}-${character.name}.json`);
             if(!isSaved) {
                 throw new Error('An error occurred while saving the character data');
             }

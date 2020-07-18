@@ -12,20 +12,16 @@ import StatRoll from "./commands/StatRoll";
 import StorageClientFactory from "./persistence/StorageClientFactory";
 import IStorageClient from "./persistence/IStorageClient";
 import UpdateCharacterCommand from "./commands/UpdateCharacterCommand";
-
-interface CharacterMapping {
-    userId: string;
-    activeCharacter: ICharacter;
-}
+import { ServerMap } from "./persistence/ServerMap";
 
 export default class DndBot {
 
-    private _characterMap: CharacterMapping[];
+    private _serverMaps: ServerMap[];
     private _storageClient: IStorageClient | undefined;
     private _logger: winston.Logger;
 
     constructor(logger: winston.Logger) {
-        this._characterMap = [];
+        this._serverMaps = [];
         this._logger = logger;
         try {
             this._storageClient = new StorageClientFactory().getInstance();
@@ -34,27 +30,33 @@ export default class DndBot {
         
         setTimeout(async () => {
             try {
-                this._characterMap = JSON.parse(await this._storageClient!.fetch('charactermap.json'));
+                if(this._storageClient !== undefined) {
+                    const serverMapfiles = await this._storageClient.find('servermap');
+                    for(const file of serverMapfiles) {
+                        this._serverMaps.push(JSON.parse(await this._storageClient.fetch(file)));
+                    }
+                }
             }
             catch(e) {}
         }, 0);
         setInterval(async () => {
             try {
-                await this._storageClient!.save(JSON.stringify(this._characterMap), 'charactermap.json');
+                if(this._storageClient !== undefined) {
+                    for(var sm of this._serverMaps) {
+                        await this._storageClient.save(JSON.stringify(sm), `servermap_${sm.serverId}.json`);
+                    }
+                }
             }
             catch(e) {}
-        }, 3 * 60 * 1000);
+        }, 0.5 * 60 * 1000);
     }
 
-    getActiveCharacters(): CharacterMapping[] {
-        return this._characterMap;
-    }
-
-    getCharacterName(userId: string): string | null {
-        if(this._storageClient !== null) {
-            const charIdx = this._characterMap.map(x => x.userId).indexOf(userId);
-            if(charIdx !== -1) {
-                let charName = this._characterMap[charIdx].activeCharacter.name;
+    getCharacterName(userId: string, serverId: string): string | null {
+        if(this._storageClient !== undefined) {
+            const activeChar = this._serverMaps.filter(x => x.serverId === serverId)[0]
+                ?.characterMap.filter(x => x.userId === userId)[0]?.activeCharacter;
+            if(activeChar) {
+                let charName = activeChar.name;
                 const firstLetter = charName[0].toUpperCase();
                 charName = firstLetter + charName.substring(1, charName.length);
                 return charName;
@@ -64,7 +66,19 @@ export default class DndBot {
         return null;
     }
 
-    async handleMessage(message: string, userId: string) : Promise<MessageEmbedField[]> {
+    getActiveCharacter(userId: string, serverId: string): ICharacter | null {
+        if(this._storageClient !== undefined) {
+            const activeChar = this._serverMaps.filter(x => x.serverId === serverId)[0]
+                ?.characterMap.filter(x => x.userId === userId)[0]?.activeCharacter;
+            if(activeChar) {
+                return activeChar;
+            }
+        }
+
+        return null;
+    }
+
+    async handleMessage(message: string, userId: string, serverId: string) : Promise<MessageEmbedField[]> {
         this._logger.verbose(`Handling input ${message}`);
 
         const lowercaseMessage = message.toLowerCase();
@@ -81,19 +95,19 @@ export default class DndBot {
 
         // Create new character
         else if(lowercaseMessage.match(/^newcharacter|nc .*/)) {
-            cmd = new CreateCharacterCommand(lowercaseMessage, userId);
+            cmd = new CreateCharacterCommand(lowercaseMessage, userId, serverId);
         }
 
         // Select character
         else if(lowercaseMessage.match(/^selectcharacter|sc .*/)) {
-            cmd = new SelectCharacterCommand(lowercaseMessage, userId);
+            cmd = new SelectCharacterCommand(lowercaseMessage, userId, serverId);
         }
 
         else if(lowercaseMessage.match(/^updatecharacter|uc .*/)) {
-            const index = this._characterMap.map(x => x.userId).indexOf(userId);
-            if(index !== -1) {
+            const char = this.getActiveCharacter(userId, serverId);
+            if(char !== null) {
                 if(this._storageClient !== undefined) {
-                    cmd = new UpdateCharacterCommand(lowercaseMessage, this._characterMap[index].activeCharacter, userId);
+                    cmd = new UpdateCharacterCommand(lowercaseMessage, char, userId, serverId);
                 }
                 else {
                     throw new Error('This command is disabled');
@@ -105,9 +119,8 @@ export default class DndBot {
         }
 
         else if(lowercaseMessage.match(/^[a-z]{3,4}[cs][ad]?$/)) {
-            const index = this._characterMap.map(x => x.userId).indexOf(userId);
-            if(index !== -1) {
-                const char = this._characterMap[index].activeCharacter;
+            const char = this.getActiveCharacter(userId, serverId);
+            if(char !== null) {
                 const diceRoll = StatRoll.getDiceRoll(lowercaseMessage, char);
                 cmd = new RollCommand(diceRoll, this._logger);
             }
@@ -117,9 +130,8 @@ export default class DndBot {
         }
 
         else if(lowercaseMessage === 'ini') {
-            const index = this._characterMap.map(x => x.userId).indexOf(userId);
-            if(index !== -1) {
-                const char = this._characterMap[index].activeCharacter;
+            const char = this.getActiveCharacter(userId, serverId);
+            if(char !== null) {
                 const diceRoll = `r1d20+${char.initiative}`;
                 cmd = new RollCommand(diceRoll, this._logger);
             }
@@ -140,13 +152,20 @@ export default class DndBot {
         if(cmd instanceof SelectCharacterCommand) {
             const char = (<SelectCharacterCommand>cmd).getCharacter();
             if(char !== null) {
-                const existingChar = this._characterMap.filter(x => x.userId === userId).length === 1;
+                let serverMap = this._serverMaps.filter(x => x.serverId === serverId)[0];
+                if(!serverMap) {
+                    serverMap = {
+                        serverId: serverId,
+                        characterMap: []
+                    };
+                    this._serverMaps.push(serverMap);
+                }
+                const existingChar = serverMap.characterMap.filter(x => x.userId === userId)[0];
                 if(existingChar) {
-                    const index = this._characterMap.map(x => x.userId).indexOf(userId);
-                    this._characterMap[index].activeCharacter = char;
+                    existingChar.activeCharacter = char;
                 }
                 else {
-                    this._characterMap.push({
+                    serverMap.characterMap.push({
                         userId: userId,
                         activeCharacter: char
                     });

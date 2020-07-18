@@ -9,11 +9,13 @@ export default class UpdateCharacterCommand implements ICommand {
     private _character: Character;
     private _message: string;
     private _userId: string;
+    private _serverId: string;
 
-    constructor(message: string, character: Character, userId: string) {
+    constructor(message: string, character: Character, userId: string, serverId: string) {
         this._character = character;
         this._message = message;
         this._userId = userId;
+        this._serverId = serverId;
     }
 
     async execute(): Promise<MessageEmbedField[]> {
@@ -37,7 +39,7 @@ export default class UpdateCharacterCommand implements ICommand {
 
             if(allValid) {
                 Object.assign(this._character, newStats);
-                await new CreateCharacterCommand(`newcharacter ${JSON.stringify(this._character)}`, this._userId).execute();
+                await new CreateCharacterCommand(`newcharacter ${JSON.stringify(this._character)}`, this._userId, this._serverId).execute();
             }
             else {
                 throw new Error('Invalid stat specified in JSON');

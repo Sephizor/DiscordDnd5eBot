@@ -20,18 +20,21 @@ export default class FileStorageClient implements IStorageClient {
     }
 
     private validateFilename(fileName: string): boolean {
-        const matches = fileName.match(/^[0-9a-zA-Z\^\&\'\@\{\}\[\]\,\$\=\!\-\#\(\)\.\%\+\~\_ ]+$/);
+        const matches = fileName.match(/^[0-9a-zA-Z\^\&\'\@\{\}\[\]\,\$\=\!\-\#\(\)\.\%\+\~\_\\ ]+$/);
         return matches !== null && matches.length > 0;
     }
 
     async save(json: string, fileName: string): Promise<boolean> {
+        fileName = fileName.replace('/', path.sep);
         if(!this.validateFilename(fileName)) {
             throw new Error('Invalid input');
         }
         fs.writeFileSync(`${this._rootDirectory}${path.sep}${fileName}`, json);
         return fs.existsSync(`${this._rootDirectory}${path.sep}${fileName}`);
     }
+
     async fetch(fileName: string): Promise<string> {
+        fileName = fileName.replace('/', path.sep);
         if(!this.validateFilename(fileName)) {
             throw new Error('Invalid input');
         }
@@ -40,6 +43,17 @@ export default class FileStorageClient implements IStorageClient {
             return '';
         }
         return fs.readFileSync(file, 'utf8');
+    }
+
+    async find(filepathPart: string): Promise<string[]> {
+        const dirFiles = fs.readdirSync(`${this._rootDirectory}${path.sep}`);
+        const fileList = [];
+        for(const item of dirFiles) {
+            if(item.indexOf(filepathPart) !== -1) {
+                fileList.push(item);
+            }
+        }
+        return fileList;
     }
 
 }

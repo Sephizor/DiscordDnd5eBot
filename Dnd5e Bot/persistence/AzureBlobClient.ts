@@ -14,7 +14,7 @@ export default class AzureBlobClient implements IStorageClient {
     }
 
     private validateFilename(fileName: string): boolean {
-        const matches = fileName.match(/^[0-9a-zA-Z\^\&\'\@\{\}\[\]\,\$\=\!\-\#\(\)\.\%\+\~\_ ]+$/);
+        const matches = fileName.match(/^[0-9a-zA-Z\^\&\'\@\{\}\[\]\,\$\=\!\-\#\(\)\.\%\+\~\_\/ ]+$/);
         return matches !== null && matches.length > 0;
     }
 
@@ -53,6 +53,23 @@ export default class AzureBlobClient implements IStorageClient {
         catch(e) {
             throw new Error('An error occurred while retrieving data from storage');
         }
+    }
+
+    async find(filepathPart: string): Promise<string[]> {
+        const fileList = [];
+        try {
+            const containerClient = this._client.getContainerClient(this._containerName);
+            
+            for await (const item of containerClient.listBlobsFlat()) {
+                if(item.name.indexOf(filepathPart) !== -1) {
+                    fileList.push(item.name);
+                }
+            }
+        }
+        catch(e) {
+            throw new Error('An error occurred while listing blobs');
+        }
+        return fileList;
     }
 
 }
