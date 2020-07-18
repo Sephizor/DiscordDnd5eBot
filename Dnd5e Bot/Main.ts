@@ -1,3 +1,4 @@
+import fs from 'fs';
 import winston = require('winston');
 import {
     Client,
@@ -10,6 +11,13 @@ const settings: Settings = require('./settings.json');
 
 import DndBot from './DndBot';
 import Settings from './Settings';
+
+let localSettings: any = null;
+
+if(fs.existsSync(`${__dirname}/settings.local.json`)) {
+    localSettings = require('./settings.local.json');
+    Object.assign(settings, localSettings);
+}
 
 // Configure logger settings
 const logger = winston.createLogger({
