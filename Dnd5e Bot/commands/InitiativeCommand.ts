@@ -34,7 +34,7 @@ export default class InitiativeCommand implements ICommand {
     private _override: number = 0;
 
     constructor(message: string, userId: string, serverId: string, character: ICharacter | null) {
-        const commandRegex = /^init (start|next|end|list|((join) ?(\d+)?|(add) ([a-z]+) ?(\d+)?))/g;
+        const commandRegex = /^init (start|begin|next|end|list|((join) ?(\d+)?|(add) ([a-z]+) ?(\d+)?))/g;
         const commandMatches = commandRegex.exec(message);
 
         this._serverId = serverId;
@@ -263,6 +263,7 @@ export default class InitiativeCommand implements ICommand {
 
     async execute(): Promise<MessageEmbedField[]> {
         switch(this._subCommand) {
+            case 'begin':
             case 'start':
                 return await this.startInitiative();
             case 'join':
