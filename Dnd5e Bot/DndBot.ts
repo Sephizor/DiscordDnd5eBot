@@ -134,17 +134,6 @@ export default class DndBot {
             cmd = new InitiativeCommand(message, userId, serverId, this.getActiveCharacter(userId, serverId));
         }
 
-        else if(lowercaseMessage === 'ini') {
-            const char = this.getActiveCharacter(userId, serverId);
-            if(char !== null) {
-                const diceRoll = `r1d20+${char.initiative}`;
-                cmd = new RollCommand(diceRoll, this._logger);
-            }
-            else {
-                throw new Error('You must have created and selected a character before rolling initiative checks');
-            }
-        }
-
         // Help command
         else if(lowercaseMessage.match(/^help$/)) {
             cmd = new HelpCommand();
