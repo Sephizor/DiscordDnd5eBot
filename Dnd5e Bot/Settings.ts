@@ -12,9 +12,7 @@ export default interface Settings {
     token: string;
     messagePrefix: string;
     logLevel: string;
-    webEnabled: boolean;
     storageType: string;
     blobStorage?: _BlobStorage;
     fileStorage?: _FileStorage;
-    webPort?: string;
 }
