@@ -217,8 +217,15 @@ export default class InitiativeCommand implements ICommand {
         initiative.initiatives = initiative.initiatives.sort((a, b) => (a.initiative > b.initiative) ? -1 : 1);
 
         let output = '';
+        let i = 0;
         for(const init of initiative.initiatives) {
-            output += `${init.characterName} - ${init.initiative}\n`
+            if(i === initiative.currentIndex) {
+                output += `*${init.characterName} - ${init.initiative}\n`;
+            }
+            else {
+                output += `${init.characterName} - ${init.initiative}\n`
+            }
+            i++;
         }
 
         output.trim();
