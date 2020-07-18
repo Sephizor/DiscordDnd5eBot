@@ -3,21 +3,17 @@ import { MessageEmbedField } from 'discord.js';
 
 import Util from "../Util";
 import ICommand from "./ICommand";
-
-enum RollType {
-    NORMAL = 'normal',
-    ADVANTAGE = 'advantage',
-    DISADVANTAGE = 'disadvantage',
-    UNKNOWN = 'unknown'
-}
+import DiceRoller, { RollType, DiceResult } from './DiceRoller';
 
 export default class RollCommand implements ICommand {
 
+    private _diceResult?: DiceResult;
     private _rollType: RollType = RollType.NORMAL;
     private _numDice: number = 0;
     private _dieSize: number = 0;
     private _operator: string = '';
     private _skillModifier: number = 0;
+    private _isValid: boolean = false;
 
     private _validDice: number[] = [2, 4, 6, 8, 10, 12, 20, 100];
 
@@ -32,18 +28,21 @@ export default class RollCommand implements ICommand {
 
             logger.verbose(`Values of regex match: ${rollMatches.toString()}`);
 
-            this._rollType = rollMatches[0] ? this.getRollType(rollMatches[0]) : this._rollType;
-            this._numDice = rollMatches[1] ? parseInt(rollMatches[1], 10) : this._numDice;
-            this._dieSize = rollMatches[2] ? parseInt(rollMatches[2], 10): this._dieSize;
-            this._operator = rollMatches[3] ? rollMatches[3] : this._operator;
-            this._skillModifier = rollMatches[4] ? parseInt(rollMatches[4], 10) : this._skillModifier;
+            this._rollType = rollMatches[0] ? this.getRollType(rollMatches[0]) : RollType.NORMAL;
+            this._numDice = rollMatches[1] ? parseInt(rollMatches[1], 10) : 0;
+            this._dieSize = rollMatches[2] ? parseInt(rollMatches[2], 10): 0;
+            this._operator = rollMatches[3] ? rollMatches[3] : '';
+            this._skillModifier = rollMatches[4] ? parseInt(rollMatches[4], 10) : 0;
 
-            logger.verbose(`Class values: ${this._rollType}, ${this._numDice}, ${this._dieSize}, ${this._operator}, ${this._skillModifier}`);
+            this._isValid = this.validate();
+            if(this._isValid) {
+                this._diceResult = DiceRoller.rollDice(this._rollType, this._numDice, this._dieSize, this._operator, this._skillModifier);
+            }
         }
     }
 
     async execute(): Promise<MessageEmbedField[]> {
-        if(!this.validate()) {
+        if(!this._isValid) {
             return <MessageEmbedField[]>[
                 {
                     name: 'Error',
@@ -52,72 +51,31 @@ export default class RollCommand implements ICommand {
             ];
         }
 
-        const rollArray: number[] = [];
-        let fields: MessageEmbedField[] = [];
-
-        if(this._rollType !== RollType.NORMAL) {
-            this._numDice *= 2;
-        }
-
-        for(let i = 0; i < this._numDice; i++) {
-            const dieRoll = Math.floor((Math.random() * this._dieSize) + 1);
-            rollArray.push(dieRoll);
-        }
-
-        let finalResult: number;
-        let maxRoll: number;
-
-        switch(this._rollType) {
-            case RollType.ADVANTAGE:
-                maxRoll = Math.max(...rollArray);
-                finalResult = rollArray.reduce((high, current) => {
-                    return current > high ? current : high;
-                });
-                this.checkCriticals(maxRoll, fields);
-                break;
-            case RollType.DISADVANTAGE:
-                maxRoll = Math.min(...rollArray);
-                finalResult = rollArray.reduce((low, current) => {
-                    return current < low ? current : low;
-                });
-                this.checkCriticals(maxRoll, fields);
-                break;
-            default:
-                finalResult = rollArray.reduce((t, c) => {
-                    return t + c;
-                });
-                if(this._numDice === 1 && this._dieSize === 20) {
-                    maxRoll = Math.max(...rollArray);
-                    this.checkCriticals(maxRoll, fields);
+        if(this._diceResult !== undefined) {
+            const critFields = this.checkCriticals(this._diceResult.diceResult);
+            
+            return critFields.concat(<MessageEmbedField[]>[
+                {
+                    name: 'Result',
+                    value: `${Util.convertNumberToEmoji(this._diceResult.diceResult)}`
+                },
+                {
+                    name: 'Dice Roll(s)',
+                    value: `${this._diceResult.diceRolls.join(', ')}`
+                },
+                {
+                    name: 'Input',
+                    value: this.toString()
                 }
-                break;
+            ]);
         }
 
-        if(this._skillModifier > 0) {
-            if(this._operator === '+') {
-                finalResult += this._skillModifier;
-            }
-            else if(this._operator === '-') {
-                finalResult -= this._skillModifier;
-            }
-        }
-
-        fields = fields.concat(<MessageEmbedField[]>[
+        return <MessageEmbedField[]>[
             {
-                name: 'Result',
-                value: `${Util.convertNumberToEmoji(finalResult)}`
-            },
-            {
-                name: 'Dice Roll(s)',
-                value: `${rollArray.join(', ')}`
-            },
-            {
-                name: 'Input',
-                value: this.toString()
+                name: 'Error',
+                value: 'An error occurred while rolling the dice'
             }
-        ]);
-
-        return fields;
+        ];
     }
 
     private validate(): boolean {
@@ -158,28 +116,21 @@ export default class RollCommand implements ICommand {
         return str;
     }
 
-    private checkCriticals(maxRoll: number, fields: MessageEmbedField[]) {
+    private checkCriticals(maxRoll: number): MessageEmbedField[] {
         if(this._dieSize === 20) {
             if(maxRoll === 20) {
-                this.addCriticalField(fields);
+                return [<MessageEmbedField>{
+                    name: 'Critical!',
+                    value: `NAT ${Util.convertNumberToEmoji(20)}`
+                }];
             }
             else if(maxRoll === 1) {
-                this.addCriticalFailField(fields);
+                return [<MessageEmbedField>{
+                    name: 'Critical Fail!',
+                    value: `NAT ${Util.convertNumberToEmoji(1)}`
+                }];
             }
         }
-    }
-
-    private addCriticalField(fields: MessageEmbedField[]) {
-        return fields.push(<MessageEmbedField>{
-            name: 'Critical!',
-            value: `NAT ${Util.convertNumberToEmoji(20)}`
-        });
-    }
-
-    private addCriticalFailField(fields: MessageEmbedField[]) {
-        return fields.push(<MessageEmbedField>{
-            name: 'Critical Fail!',
-            value: `NAT ${Util.convertNumberToEmoji(1)}`
-        });
+        return [];
     }
 }
