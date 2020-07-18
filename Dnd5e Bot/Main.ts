@@ -55,10 +55,10 @@ async function handleMessage(message: Message) {
             const outputMessage: MessageEmbedField[] = await _messageHandler.handleMessage(
                 message.content.substring(settings.messagePrefix.length, message.content.length),
                 message.author.id,
-                message.guild.id
+                message.guild !== null ? message.guild.id : undefined
             );
 
-            const charName = _messageHandler.getCharacterName(message.author.id, message.guild.id);
+            const charName = _messageHandler.getCharacterName(message.author.id, message.guild !== null ? message.guild.id : undefined);
             const title = (charName !== null ? charName : addressName) + "'s results";
 
             message.channel.send(new RichEmbed(<RichEmbedOptions> {

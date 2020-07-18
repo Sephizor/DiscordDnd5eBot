@@ -17,6 +17,9 @@ The token in settings.json is blank and will not work as-is. To run this, you wi
 * Character creation and selection that supports multiple characters per user (example below)
 * Two options for storage of character data: Azure Blob Storage or Local File Storage
 * Skill check, stat save and initiative rolls if you have created a character
+* Initiative tracker
+
+<aside class="information">Note that private messaging the bot is limited to basic roll commands only. No character management can be done via DM as character sheets are tracked per-server.</aside>
 
 # Usage
 Roll a single d20: `!` or `!r1d20`
@@ -49,6 +52,19 @@ Skill checks can be performed by using the first three letters of the skill name
 Skill check with advantage: `!anica`
 
 Stat save with disadvantage: `!dexsa`
+
+# Initiative Tracking System
+Initiative order can be managed through the bot using the following commands
+<pre>
+!init start - Starts initiative preparation
+!init join - Joins your active character to the initiative order
+!init join 10 - Joins your active character to the initiative order with an override value of 10
+!init add SomeRandomEntity - Adds an entity called SomeRandomEntity to the initiative order
+!init add SomeRandomEntity 10 - Adds an entity called SomeRandomEntity to the initiative order with an override value of 10
+!init list - Prints out the initiative list
+!init next - Advances the initiative to the next person. This will also start the first round of combat and increment combat rounds when the order resets.
+!init end - Ends combat
+</pre>
 
 # Getting Started
 To build and test the bot, run the following commands inside the "Dnd5e Bot" directory:

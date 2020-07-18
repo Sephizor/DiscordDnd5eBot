@@ -52,8 +52,8 @@ export default class DndBot {
         }, 0.5 * 60 * 1000);
     }
 
-    getCharacterName(userId: string, serverId: string): string | null {
-        if(this._storageClient !== undefined) {
+    getCharacterName(userId: string, serverId?: string): string | null {
+        if(this._storageClient !== undefined && serverId !== undefined) {
             const activeChar = this._serverMaps.filter(x => x.serverId === serverId)[0]
                 ?.characterMap.filter(x => x.userId === userId)[0]?.activeCharacter;
             if(activeChar) {
@@ -79,7 +79,7 @@ export default class DndBot {
         return null;
     }
 
-    async handleMessage(message: string, userId: string, serverId: string) : Promise<MessageEmbedField[]> {
+    async handleMessage(message: string, userId: string, serverId?: string) : Promise<MessageEmbedField[]> {
         this._logger.verbose(`Handling input ${message}`);
 
         const lowercaseMessage = message.toLowerCase();
@@ -96,15 +96,24 @@ export default class DndBot {
 
         // Create new character
         else if(lowercaseMessage.match(/^newcharacter|nc .*/)) {
+            if(serverId === undefined) {
+                throw new Error('You must use this command in a channel on the server which your character belongs to.')
+            }
             cmd = new CreateCharacterCommand(lowercaseMessage, userId, serverId);
         }
 
         // Select character
         else if(lowercaseMessage.match(/^selectcharacter|sc .*/)) {
+            if(serverId === undefined) {
+                throw new Error('You must use this command in a channel on the server which your character belongs to.')
+            }
             cmd = new SelectCharacterCommand(lowercaseMessage, userId, serverId);
         }
 
         else if(lowercaseMessage.match(/^updatecharacter|uc .*/)) {
+            if(serverId === undefined) {
+                throw new Error('You must use this command in a channel on the server which your character belongs to.')
+            }
             const char = this.getActiveCharacter(userId, serverId);
             if(char !== null) {
                 if(this._storageClient !== undefined) {
@@ -120,6 +129,9 @@ export default class DndBot {
         }
 
         else if(lowercaseMessage.match(/^[a-z]{3,4}[cs][ad]?$/)) {
+            if(serverId === undefined) {
+                throw new Error('You must use this command in a channel on the server which your character belongs to.')
+            }
             const char = this.getActiveCharacter(userId, serverId);
             if(char !== null) {
                 const diceRoll = StatRoll.getDiceRoll(lowercaseMessage, char);
@@ -131,6 +143,9 @@ export default class DndBot {
         }
 
         else if(lowercaseMessage.match(/^init .*/)) {
+            if(serverId === undefined) {
+                throw new Error('You must use this command in a channel on the server which your character belongs to.')
+            }
             cmd = new InitiativeCommand(message, userId, serverId, this.getActiveCharacter(userId, serverId));
         }
 
@@ -143,26 +158,28 @@ export default class DndBot {
 
         this._logger.verbose(`Command result: ${JSON.stringify(result)}`);
 
-        if(cmd instanceof SelectCharacterCommand) {
-            const char = (<SelectCharacterCommand>cmd).getCharacter();
-            if(char !== null) {
-                let serverMap = this._serverMaps.filter(x => x.serverId === serverId)[0];
-                if(!serverMap) {
-                    serverMap = {
-                        serverId: serverId,
-                        characterMap: []
-                    };
-                    this._serverMaps.push(serverMap);
-                }
-                const existingChar = serverMap.characterMap.filter(x => x.userId === userId)[0];
-                if(existingChar) {
-                    existingChar.activeCharacter = char;
-                }
-                else {
-                    serverMap.characterMap.push({
-                        userId: userId,
-                        activeCharacter: char
-                    });
+        if(serverId !== undefined) {
+            if(cmd instanceof SelectCharacterCommand) {
+                const char = (<SelectCharacterCommand>cmd).getCharacter();
+                if(char !== null) {
+                    let serverMap = this._serverMaps.filter(x => x.serverId === serverId)[0];
+                    if(!serverMap) {
+                        serverMap = {
+                            serverId: serverId,
+                            characterMap: []
+                        };
+                        this._serverMaps.push(serverMap);
+                    }
+                    const existingChar = serverMap.characterMap.filter(x => x.userId === userId)[0];
+                    if(existingChar) {
+                        existingChar.activeCharacter = char;
+                    }
+                    else {
+                        serverMap.characterMap.push({
+                            userId: userId,
+                            activeCharacter: char
+                        });
+                    }
                 }
             }
         }
