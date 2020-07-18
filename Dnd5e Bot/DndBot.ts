@@ -13,6 +13,7 @@ import StorageClientFactory from "./persistence/StorageClientFactory";
 import IStorageClient from "./persistence/IStorageClient";
 import UpdateCharacterCommand from "./commands/UpdateCharacterCommand";
 import { ServerMap } from "./persistence/ServerMap";
+import InitiativeCommand from "./commands/InitiativeCommand";
 
 export default class DndBot {
 
@@ -127,6 +128,10 @@ export default class DndBot {
             else {
                 throw new Error('You must have created and selected a character before rolling skill checks');
             }
+        }
+
+        else if(lowercaseMessage.match(/^init .*/)) {
+            cmd = new InitiativeCommand(message, userId, serverId, this.getActiveCharacter(userId, serverId));
         }
 
         else if(lowercaseMessage === 'ini') {
