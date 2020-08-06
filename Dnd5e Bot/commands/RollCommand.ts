@@ -52,7 +52,7 @@ export default class RollCommand implements ICommand {
         }
 
         if(this._diceResult !== undefined) {
-            const critFields = this.checkCriticals(this._diceResult.diceResult);
+            const critFields = this.checkCriticals(this._diceResult.diceRolls);
             
             return critFields.concat(<MessageEmbedField[]>[
                 {
@@ -116,15 +116,27 @@ export default class RollCommand implements ICommand {
         return str;
     }
 
-    private checkCriticals(maxRoll: number): MessageEmbedField[] {
+    private checkCriticals(diceRolls: number[]): MessageEmbedField[] {
         if(this._dieSize === 20) {
-            if(maxRoll === 20) {
+            let result = -1;
+
+            if(this._rollType === RollType.ADVANTAGE) {
+                result = Math.max(...diceRolls);
+            }
+            else if(this._rollType === RollType.DISADVANTAGE) {
+                result = Math.min(...diceRolls);
+            }
+            else if(this._numDice === 1) {
+                result = diceRolls[0];
+            }
+
+            if(result === 20) {
                 return [<MessageEmbedField>{
                     name: 'Critical!',
                     value: `NAT ${Util.convertNumberToEmoji(20)}`
                 }];
             }
-            else if(maxRoll === 1) {
+            else if(result === 1) {
                 return [<MessageEmbedField>{
                     name: 'Critical Fail!',
                     value: `NAT ${Util.convertNumberToEmoji(1)}`
