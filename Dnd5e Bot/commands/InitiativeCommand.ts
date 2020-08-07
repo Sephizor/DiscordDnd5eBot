@@ -27,14 +27,14 @@ interface ServerInitiative {
 export default class InitiativeCommand implements ICommand {
     private _serverId: string;
     private _character?: ICharacter;
-    private _monsterName?: string;
+    private _overrideName?: string;
     private _storageClient: IStorageClient = new StorageClientFactory().getInstance();
 
     private _subCommand: string = '';
     private _override: number = 0;
 
     constructor(message: string, userId: string, serverId: string, character: ICharacter | null) {
-        const commandRegex = /^init (start|begin|next|end|list|((join) ?(\d+)?|(add) ([a-zA-Z]+) ?(\d+)?))/g;
+        const commandRegex = /^init (start|begin|next|end|list|((join) ?(\d+)?|(add|set) ([a-zA-Z]+) ?(\d+)?))/g;
         const commandMatches = commandRegex.exec(message);
 
         this._serverId = serverId;
@@ -47,7 +47,7 @@ export default class InitiativeCommand implements ICommand {
             this._subCommand = commandMatches[1];
             if(commandMatches[5] !== undefined) {
                 this._subCommand = commandMatches[5];
-                this._monsterName = commandMatches[6];
+                this._overrideName = commandMatches[6];
                 if(commandMatches[7] !== undefined) {
                     this._override = parseInt(commandMatches[7], 10);
                 }
@@ -142,22 +142,22 @@ export default class InitiativeCommand implements ICommand {
     }
 
     async addInitiative(): Promise<MessageEmbedField[]> {
-        if(this._monsterName === undefined) {
+        if(this._overrideName === undefined) {
             throw new Error('You must enter a monster name to join initiative');
         }
 
         const initiative = await this.getInitiatives();
         const initRoll = this._override > 0 ? this._override : DiceRoller.rollDice(RollType.NORMAL, 1, 20, '', 0).diceResult;
 
-        if(initiative.initiatives.filter(x => x.characterName === this._monsterName).length !== 0) {
-            throw new Error(`${this._monsterName} is already in the initiative order`);
+        if(initiative.initiatives.filter(x => x.characterName === this._overrideName).length !== 0) {
+            throw new Error(`${this._overrideName} is already in the initiative order`);
         }
         if(initiative.state === InitiativeState.ENDED) {
             throw new Error('There is no initiative active');
         }
 
         const monsterInit = <CharacterInitiative> {
-            characterName: this._monsterName,
+            characterName: this._overrideName,
             initiative: initRoll
         };
 
@@ -169,6 +169,32 @@ export default class InitiativeCommand implements ICommand {
             {
                 name: 'Initiative joined',
                 value: `${monsterInit.characterName} joined the initiative with a roll of ${initRoll}!`
+            }
+        ];
+    }
+
+    async setInitiative(): Promise<MessageEmbedField[]> {
+        var initiative = await this.getInitiatives();
+        if(initiative.state === InitiativeState.ENDED) {
+            throw new Error('There is no initiative active');
+        }
+        const charInit = initiative.initiatives.filter(x => x.characterName === this._overrideName)[0];
+        if(charInit !== undefined) {
+            charInit.initiative = this._override;
+            initiative.initiatives = initiative.initiatives.sort((a, b) => (a.initiative > b.initiative) ? -1 : 1);
+            this.saveInitiatives(initiative);
+            return <MessageEmbedField[]> [
+                {
+                    name: 'Initiative set',
+                    value: `${this._overrideName}'s initiative set to ${this._override}`
+                }
+            ];
+        }
+
+        return <MessageEmbedField[]> [
+            {
+                name: 'Error',
+                value: `The character "${this._overrideName}" is not present in the initiative list`
             }
         ];
     }
@@ -270,6 +296,8 @@ export default class InitiativeCommand implements ICommand {
                 return await this.joinInitiative()
             case 'add':
                 return await this.addInitiative();
+            case 'set':
+                return await this.setInitiative();
             case 'next':
                 return await this.nextInitiative();
             case 'list':
