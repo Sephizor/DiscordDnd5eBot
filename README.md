@@ -36,6 +36,8 @@ Select a character: `!selectcharacter samplecharacter`
 
 Update your selected character's stats: `!updatecharacter { "strength": 3, "wisdom": 1, "dexsave": 2 }`
 
+Retrieve active character data: `!getcharacter`
+
 Roll initiative: `!ini`
 
 Skill checks can be performed by using the first three letters of the skill name, plus either 'c' (for check) or 's' (for save), plus optionally 'a' (for advantage) or 'd' (for disadvantage) with the following exceptions:
@@ -61,6 +63,7 @@ Initiative order can be managed through the bot using the following commands
 !init join 10 - Joins your active character to the initiative order with an override value of 10
 !init add SomeRandomEntity - Adds an entity called SomeRandomEntity to the initiative order
 !init add SomeRandomEntity 10 - Adds an entity called SomeRandomEntity to the initiative order with an override value of 10
+!init set SomeRandomEntity 20 - Manually sets an entity already in the initiative list to a specific initiative value
 !init list - Prints out the initiative list
 !init next - Advances the initiative to the next person. This will also start the first round of combat and increment combat rounds when the order resets.
 !init end - Ends combat
