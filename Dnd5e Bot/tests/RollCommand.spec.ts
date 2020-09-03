@@ -101,6 +101,16 @@ describe('Roll Command', () => {
                 expect(result.map(x => x.value)).to.deep.equal([':two::zero:', '10, 10', '2d20']);
             });
 
+            it('should handle negative numbers', async () => {
+                mockDiceRoller.setup(x => x.rollDice(It.isAny(), It.isAnyNumber(), It.isAnyNumber(), It.isAny(), It.isAnyNumber())).returns(() => <DiceResult>{
+                    diceRolls: [1],
+                    diceResult: -4
+                });
+                testee = new RollCommand('r1d2-5', mockLogger.object, mockDiceRoller.object);
+                const result = await testee.execute();
+                expect(result.map(x => x.value)[0]).to.equal('-:four:');
+            });
+
             it('should show all dice rolls for 50 dice', async () => {
                 mockDiceRoller.setup(x => x.rollDice(It.isAny(), It.isAnyNumber(), It.isAnyNumber(), It.isAny(), It.isAnyNumber())).returns(() => <DiceResult>{
                     diceRolls: [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
