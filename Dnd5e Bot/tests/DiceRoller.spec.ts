@@ -26,7 +26,7 @@ describe('Dice roller', () => {
         expect(result.diceResult).to.equal(10);
     });
 
-    it('should handle rolling a lot of dice on a disadvantage roll', async () => {
+    it('should handle rolling a lot of dice on a normal roll', async () => {
         for(let i=0; i<49; i++) {
             mockRandom.setup(x => x.random()).returns(() => 0);
         }
