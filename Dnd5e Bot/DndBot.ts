@@ -15,16 +15,19 @@ import UpdateCharacterCommand from "./commands/UpdateCharacterCommand";
 import { ServerMap } from "./persistence/ServerMap";
 import InitiativeCommand from "./commands/InitiativeCommand";
 import GetCharacterCommand from "./commands/GetCharacterCommand";
+import { DiceRoller } from "./commands/DiceRoller";
 
 export default class DndBot {
 
     private _serverMaps: ServerMap[];
     private _storageClient: IStorageClient | undefined;
     private _logger: winston.Logger;
+    private _diceRoller: DiceRoller;
 
     constructor(logger: winston.Logger) {
         this._serverMaps = [];
         this._logger = logger;
+        this._diceRoller = new DiceRoller();
         try {
             this._storageClient = new StorageClientFactory().getInstance();
         }
@@ -88,11 +91,11 @@ export default class DndBot {
 
         // Roll commands
         if(lowercaseMessage.match(/^$/)) {
-            cmd = new RollCommand(`r1d20`, this._logger);
+            cmd = new RollCommand(`r1d20`, this._logger, this._diceRoller);
         }
         
         else if(lowercaseMessage.match(/^[rad]\d.*/)) {
-            cmd = new RollCommand(lowercaseMessage, this._logger);
+            cmd = new RollCommand(lowercaseMessage, this._logger, this._diceRoller);
         }
 
         // Create new character
@@ -149,7 +152,7 @@ export default class DndBot {
             const char = this.getActiveCharacter(userId, serverId);
             if(char !== null) {
                 const diceRoll = StatRoll.getDiceRoll(lowercaseMessage, char);
-                cmd = new RollCommand(diceRoll, this._logger);
+                cmd = new RollCommand(diceRoll, this._logger, this._diceRoller);
             }
             else {
                 throw new Error('You must have created and selected a character before rolling skill checks');

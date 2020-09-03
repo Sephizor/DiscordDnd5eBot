@@ -3,7 +3,7 @@ import { MessageEmbedField } from 'discord.js';
 
 import Util from "../Util";
 import ICommand from "./ICommand";
-import DiceRoller, { RollType, DiceResult } from './DiceRoller';
+import { IDiceRollService, Operator, RollType, DiceResult } from './DiceRoller';
 
 export default class RollCommand implements ICommand {
 
@@ -11,13 +11,13 @@ export default class RollCommand implements ICommand {
     private _rollType: RollType = RollType.NORMAL;
     private _numDice: number = 0;
     private _dieSize: number = 0;
-    private _operator: string = '';
+    private _operator: Operator = null;
     private _skillModifier: number = 0;
     private _isValid: boolean = false;
 
     private _validDice: number[] = [2, 4, 6, 8, 10, 12, 20, 100];
 
-    constructor(message: string, logger: Logger) {
+    constructor(message: string, logger: Logger, diceRoller: IDiceRollService) {
         const rollRegex = /^([rad]) ?(\d+) ?d ?(\d+) ?([+-])? ?(\d+)?/g;
         const rollMatches = rollRegex.exec(message);
 
@@ -31,12 +31,12 @@ export default class RollCommand implements ICommand {
             this._rollType = rollMatches[0] ? this.getRollType(rollMatches[0]) : RollType.NORMAL;
             this._numDice = rollMatches[1] ? parseInt(rollMatches[1], 10) : 0;
             this._dieSize = rollMatches[2] ? parseInt(rollMatches[2], 10): 0;
-            this._operator = rollMatches[3] ? rollMatches[3] : '';
+            this._operator = rollMatches[3] ? <Operator>rollMatches[3] : null;
             this._skillModifier = rollMatches[4] ? parseInt(rollMatches[4], 10) : 0;
 
             this._isValid = this.validate();
             if(this._isValid) {
-                this._diceResult = DiceRoller.rollDice(this._rollType, this._numDice, this._dieSize, this._operator, this._skillModifier);
+                this._diceResult = diceRoller.rollDice(this._rollType, this._numDice, this._dieSize, this._operator, this._skillModifier);
             }
         }
     }
@@ -85,7 +85,7 @@ export default class RollCommand implements ICommand {
             this._rollType !== RollType.UNKNOWN;
 
         if(this._skillModifier > 0) {
-            return isValid && this._operator !== '';
+            return isValid && this._operator !== null;
         }
 
         return isValid;
@@ -106,11 +106,11 @@ export default class RollCommand implements ICommand {
 
     private toString(): string {
         let str = `${this._numDice}d${this._dieSize}`;
-        if(this._operator !== '' && this._skillModifier > 0) {
+        if(this._operator !== null && this._skillModifier > 0) {
             str += `${this._operator}${this._skillModifier}`;
-            if(this._rollType !== RollType.NORMAL) {
-                str += ` with ${this._rollType.toString().toLowerCase()}`;
-            }
+        }
+        if(this._rollType !== RollType.NORMAL) {
+            str += ` with ${this._rollType.toString().toLowerCase()}`;
         }
 
         return str;

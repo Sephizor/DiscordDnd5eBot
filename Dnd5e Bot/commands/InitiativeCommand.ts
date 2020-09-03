@@ -2,7 +2,7 @@ import ICommand from "./ICommand";
 import { MessageEmbedField } from "discord.js";
 import IStorageClient from "../persistence/IStorageClient";
 import StorageClientFactory from "../persistence/StorageClientFactory";
-import DiceRoller, { RollType } from "./DiceRoller";
+import { DiceRoller, RollType } from "./DiceRoller";
 import { ICharacter } from "../Character";
 
 interface CharacterInitiative {
@@ -29,6 +29,7 @@ export default class InitiativeCommand implements ICommand {
     private _character?: ICharacter;
     private _overrideName?: string;
     private _storageClient: IStorageClient = new StorageClientFactory().getInstance();
+    private _diceRoller: DiceRoller;
 
     private _subCommand: string = '';
     private _override: number = 0;
@@ -38,6 +39,7 @@ export default class InitiativeCommand implements ICommand {
         const commandMatches = commandRegex.exec(message);
 
         this._serverId = serverId;
+        this._diceRoller = new DiceRoller();
 
         if(character !== null) {
             this._character = character;
@@ -115,7 +117,7 @@ export default class InitiativeCommand implements ICommand {
         }
 
         const initiative = await this.getInitiatives();
-        const initRoll = this._override > 0 ? this._override : DiceRoller.rollDice(RollType.NORMAL, 1, 20, '+', this._character.initiative).diceResult;
+        const initRoll = this._override > 0 ? this._override : this._diceRoller.rollDice(RollType.NORMAL, 1, 20, '+', this._character.initiative).diceResult;
 
         if(initiative.initiatives.filter(x => x.characterName === this._character?.name).length !== 0) {
             throw new Error('You are already in the initiative order');
@@ -147,7 +149,7 @@ export default class InitiativeCommand implements ICommand {
         }
 
         const initiative = await this.getInitiatives();
-        const initRoll = this._override > 0 ? this._override : DiceRoller.rollDice(RollType.NORMAL, 1, 20, '', 0).diceResult;
+        const initRoll = this._override > 0 ? this._override : this._diceRoller.rollDice(RollType.NORMAL, 1, 20, null, 0).diceResult;
 
         if(initiative.initiatives.filter(x => x.characterName === this._overrideName).length !== 0) {
             throw new Error(`${this._overrideName} is already in the initiative order`);

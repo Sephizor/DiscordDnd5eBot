@@ -10,8 +10,35 @@ export enum RollType {
     UNKNOWN = 'unknown'
 }
 
-export default class DiceRoller {
-    public static rollDice(_rollType: RollType, _numDice: number, _dieSize: number, _operator: string, _skillModifier: number): DiceResult {
+export type Operator = '+'|'-'|null;
+
+export interface IDiceRollService {
+    rollDice(rollType: RollType, numDice: number, dieSize: number, operator: Operator, skillModifier: number): DiceResult;
+}
+
+export interface IRandomNumberGenerator {
+    random(): number;
+}
+
+export class RandomNumberGenerator implements IRandomNumberGenerator {
+    random() {
+        return Math.random();
+    }
+}
+
+export class DiceRoller implements IDiceRollService {
+    private _randomNumberGenerator: IRandomNumberGenerator;
+
+    constructor(randomNumberGenerator?: IRandomNumberGenerator) {
+        if(randomNumberGenerator) {
+            this._randomNumberGenerator = randomNumberGenerator;
+        }
+        else {
+            this._randomNumberGenerator = new RandomNumberGenerator();
+        }
+    }
+
+    public rollDice(_rollType: RollType, _numDice: number, _dieSize: number, _operator: Operator, _skillModifier: number): DiceResult {
         const rollArray: number[] = [];
 
         if(_rollType !== RollType.NORMAL) {
@@ -19,7 +46,7 @@ export default class DiceRoller {
         }
 
         for(let i = 0; i < _numDice; i++) {
-            const dieRoll = Math.floor((Math.random() * _dieSize) + 1);
+            const dieRoll = Math.floor((this._randomNumberGenerator.random() * _dieSize) + 1);
             rollArray.push(dieRoll);
         }
 
