@@ -42,10 +42,6 @@ describe('Roll Command', () => {
         });
 
         describe('Normal rolls', () => {
-            beforeEach(() => {
-                mockDiceRoller = Mock.ofType<IDiceRollService>();
-            });
-
             it('should return successful bot output fields if input is valid with no operator or skill modifier', async () => {
                 mockDiceRoller.setup(x => x.rollDice(It.isAny(), It.isAnyNumber(), It.isAnyNumber(), It.isAny(), It.isAnyNumber())).returns(() => <DiceResult>{
                     diceRolls: [10, 10],
