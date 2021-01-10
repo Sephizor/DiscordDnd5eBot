@@ -1,4 +1,4 @@
-import {MessageEmbedField} from 'discord.js';
+import {EmbedField} from 'discord.js';
 
 import ICommand from "./ICommand";
 import { Character } from '../Character';
@@ -18,7 +18,7 @@ export default class UpdateCharacterCommand implements ICommand {
         this._serverId = serverId;
     }
 
-    async execute(): Promise<MessageEmbedField[]> {
+    async execute(): Promise<EmbedField[]> {
         const regex = /^(updatecharacter|uc) (.*)$/g;
         const json = regex.exec(this._message);
         if(json) {
@@ -45,7 +45,7 @@ export default class UpdateCharacterCommand implements ICommand {
                 throw new Error('Invalid stat specified in JSON');
             }
 
-            return <MessageEmbedField[]> [
+            return <EmbedField[]> [
                 {
                     name: "Result",
                     value: "Character updated successfully"

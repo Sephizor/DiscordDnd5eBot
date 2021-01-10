@@ -1,4 +1,4 @@
-import { MessageEmbedField } from 'discord.js';
+import { EmbedField } from 'discord.js';
 
 import ICommand from "./ICommand";
 import IStorageClient from "../persistence/IStorageClient";
@@ -24,7 +24,7 @@ export default class SelectCharacterCommand implements ICommand {
         return this._character;
     }
 
-    async execute(): Promise<MessageEmbedField[]> {
+    async execute(): Promise<EmbedField[]> {
         const selectCharRegex = /^selectcharacter|sc ([a-zA-Z]+)$/;
         const charName = selectCharRegex.exec(this._message);
         if(charName) {
@@ -41,7 +41,7 @@ export default class SelectCharacterCommand implements ICommand {
             throw new Error('Invalid syntax for selecting a character');
         }
 
-        return <MessageEmbedField[]> [
+        return <EmbedField[]> [
             {
                 name: 'Result',
                 value: `Selected character ${this._character?.name}`

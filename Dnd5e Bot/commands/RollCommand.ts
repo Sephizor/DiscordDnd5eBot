@@ -1,12 +1,13 @@
-import { Logger } from 'winston';
-import { MessageEmbedField } from 'discord.js';
+import { EmbedField } from 'discord.js';
 
 import Util from "../Util";
 import ICommand from "./ICommand";
 import { IDiceRollService, Operator, RollType, DiceResult } from './DiceRoller';
+import Logger from '../Logger';
 
 export default class RollCommand implements ICommand {
 
+    private _message: string;
     private _diceResult?: DiceResult;
     private _rollType: RollType = RollType.NORMAL;
     private _numDice: number = 0;
@@ -17,16 +18,18 @@ export default class RollCommand implements ICommand {
 
     private _validDice: number[] = [2, 4, 6, 8, 10, 12, 20, 100];
 
-    constructor(message: string, logger: Logger, diceRoller: IDiceRollService) {
+    constructor(message: string, diceRoller: IDiceRollService) {
+        Logger.Instance?.verbose(`[${RollCommand.name}]: constructor: Initialise`);
+
         const rollRegex = /^([rad]) ?(\d+) ?d ?(\d+) ?([+-])? ?(\d+)?/g;
         const rollMatches = rollRegex.exec(message);
+        this._message = message;
 
-        logger.verbose(`Entered constructor of ${RollCommand.name}`);
         if(rollMatches) {
             // Ignore the full string
             rollMatches.shift();
 
-            logger.verbose(`Values of regex match: ${rollMatches.toString()}`);
+            Logger.Instance?.verbose(`[${RollCommand.name}]: constructor: Values of regex match: ${rollMatches.toString()}`);
 
             this._rollType = rollMatches[0] ? this.getRollType(rollMatches[0]) : RollType.NORMAL;
             this._numDice = rollMatches[1] ? parseInt(rollMatches[1], 10) : 0;
@@ -41,9 +44,10 @@ export default class RollCommand implements ICommand {
         }
     }
 
-    async execute(): Promise<MessageEmbedField[]> {
+    async execute(): Promise<EmbedField[]> {
         if(!this._isValid) {
-            return <MessageEmbedField[]>[
+            Logger.Instance?.debug(`[${RollCommand.name}]: ${this.execute.name}: Invalid input: ${this._message}`);
+            return <EmbedField[]>[
                 {
                     name: 'Error',
                     value: 'You did that wrong'
@@ -54,7 +58,7 @@ export default class RollCommand implements ICommand {
         if(this._diceResult !== undefined) {
             const critFields = this.checkCriticals(this._diceResult.diceRolls);
             
-            return critFields.concat(<MessageEmbedField[]>[
+            return critFields.concat(<EmbedField[]>[
                 {
                     name: 'Result',
                     value: `${Util.convertNumberToEmoji(this._diceResult.diceResult)}`
@@ -70,7 +74,7 @@ export default class RollCommand implements ICommand {
             ]);
         }
 
-        return <MessageEmbedField[]>[
+        return <EmbedField[]>[
             {
                 name: 'Error',
                 value: 'An error occurred while rolling the dice'
@@ -116,7 +120,7 @@ export default class RollCommand implements ICommand {
         return str;
     }
 
-    private checkCriticals(diceRolls: number[]): MessageEmbedField[] {
+    private checkCriticals(diceRolls: number[]): EmbedField[] {
         if(this._dieSize === 20) {
             let result = -1;
 
@@ -131,13 +135,13 @@ export default class RollCommand implements ICommand {
             }
 
             if(result === 20) {
-                return [<MessageEmbedField>{
+                return [<EmbedField>{
                     name: 'Critical!',
                     value: `NAT ${Util.convertNumberToEmoji(20)}`
                 }];
             }
             else if(result === 1) {
-                return [<MessageEmbedField>{
+                return [<EmbedField>{
                     name: 'Critical Fail!',
                     value: `NAT ${Util.convertNumberToEmoji(1)}`
                 }];

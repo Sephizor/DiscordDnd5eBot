@@ -1,5 +1,5 @@
 import { ICharacter } from "../Character";
-import { MessageEmbedField } from "discord.js";
+import { EmbedField } from "discord.js";
 
 export default class GetCharacterCommand {
     private _character: ICharacter;
@@ -8,8 +8,8 @@ export default class GetCharacterCommand {
         this._character = character;
     }
 
-    async execute(): Promise<MessageEmbedField[]> {
-        return <MessageEmbedField[]>[
+    async execute(): Promise<EmbedField[]> {
+        return <EmbedField[]>[
             {
                 name: 'Character data',
                 value: JSON.stringify(this._character)

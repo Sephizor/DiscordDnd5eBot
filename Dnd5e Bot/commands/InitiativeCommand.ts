@@ -1,5 +1,5 @@
 import ICommand from "./ICommand";
-import { MessageEmbedField } from "discord.js";
+import { EmbedField } from "discord.js";
 import IStorageClient from "../persistence/IStorageClient";
 import StorageClientFactory from "../persistence/StorageClientFactory";
 import { DiceRoller, RollType } from "./DiceRoller";
@@ -92,7 +92,7 @@ export default class InitiativeCommand implements ICommand {
         }
     }
 
-    async startInitiative(): Promise<MessageEmbedField[]> {
+    async startInitiative(): Promise<EmbedField[]> {
         const initiative = await this.getInitiatives();
         if(initiative.state === InitiativeState.IN_PROGRESS) {
             throw new Error('Initiative is already active');
@@ -103,7 +103,7 @@ export default class InitiativeCommand implements ICommand {
 
         await this.saveInitiatives(initiative);
 
-        return <MessageEmbedField[]>[
+        return <EmbedField[]>[
             {
                 name: 'Initiative started!',
                 value: 'Prepare for battle!'
@@ -111,7 +111,7 @@ export default class InitiativeCommand implements ICommand {
         ];
     }
 
-    async joinInitiative(): Promise<MessageEmbedField[]> {
+    async joinInitiative(): Promise<EmbedField[]> {
         if(this._character === undefined) {
             throw new Error('You must have a character selected to join initiative');
         }
@@ -135,7 +135,7 @@ export default class InitiativeCommand implements ICommand {
         
         await this.saveInitiatives(initiative);
 
-        return <MessageEmbedField[]>[
+        return <EmbedField[]>[
             {
                 name: 'Initiative joined',
                 value: `${charInit.characterName} joined the initiative with a roll of ${initRoll}!`
@@ -143,7 +143,7 @@ export default class InitiativeCommand implements ICommand {
         ];
     }
 
-    async addInitiative(): Promise<MessageEmbedField[]> {
+    async addInitiative(): Promise<EmbedField[]> {
         if(this._overrideName === undefined) {
             throw new Error('You must enter a monster name to join initiative');
         }
@@ -167,7 +167,7 @@ export default class InitiativeCommand implements ICommand {
         
         await this.saveInitiatives(initiative);
 
-        return <MessageEmbedField[]>[
+        return <EmbedField[]>[
             {
                 name: 'Initiative joined',
                 value: `${monsterInit.characterName} joined the initiative with a roll of ${initRoll}!`
@@ -175,7 +175,7 @@ export default class InitiativeCommand implements ICommand {
         ];
     }
 
-    async setInitiative(): Promise<MessageEmbedField[]> {
+    async setInitiative(): Promise<EmbedField[]> {
         var initiative = await this.getInitiatives();
         if(initiative.state === InitiativeState.ENDED) {
             throw new Error('There is no initiative active');
@@ -185,7 +185,7 @@ export default class InitiativeCommand implements ICommand {
             charInit.initiative = this._override;
             initiative.initiatives = initiative.initiatives.sort((a, b) => (a.initiative > b.initiative) ? -1 : 1);
             this.saveInitiatives(initiative);
-            return <MessageEmbedField[]> [
+            return <EmbedField[]> [
                 {
                     name: 'Initiative set',
                     value: `${this._overrideName}'s initiative set to ${this._override}`
@@ -193,7 +193,7 @@ export default class InitiativeCommand implements ICommand {
             ];
         }
 
-        return <MessageEmbedField[]> [
+        return <EmbedField[]> [
             {
                 name: 'Error',
                 value: `The character "${this._overrideName}" is not present in the initiative list`
@@ -201,14 +201,14 @@ export default class InitiativeCommand implements ICommand {
         ];
     }
 
-    async nextInitiative(): Promise<MessageEmbedField[]> {
+    async nextInitiative(): Promise<EmbedField[]> {
         const initiative = await this.getInitiatives();
 
         if(initiative.state === InitiativeState.ENDED) {
             throw new Error('There is no initiative active');
         }
 
-        const fields: MessageEmbedField[] = [];
+        const fields: EmbedField[] = [];
 
         if(initiative.roundNumber === 0) {
             initiative.initiatives = initiative.initiatives.sort((a, b) => (a.initiative > b.initiative) ? -1 : 1);
@@ -218,7 +218,7 @@ export default class InitiativeCommand implements ICommand {
         if(initiative.currentIndex === initiative.initiatives.length || initiative.roundNumber === 0) {
             initiative.currentIndex = 0;
             initiative.roundNumber++;
-            fields.push(<MessageEmbedField>{
+            fields.push(<EmbedField>{
                 name: 'New round!',
                 value: `Advancing to round ${initiative.roundNumber}`
             });
@@ -226,7 +226,7 @@ export default class InitiativeCommand implements ICommand {
 
         await this.saveInitiatives(initiative);
 
-        fields.push(<MessageEmbedField>
+        fields.push(<EmbedField>
             {
                 name: 'Initiative passed',
                 value: `It's now ${initiative.initiatives[initiative.currentIndex].characterName}'s turn!`
@@ -235,7 +235,7 @@ export default class InitiativeCommand implements ICommand {
         return fields;
     }
 
-    async listInitiative(): Promise<MessageEmbedField[]> {
+    async listInitiative(): Promise<EmbedField[]> {
         const initiative = await this.getInitiatives();
 
         if(initiative.state === InitiativeState.ENDED) {
@@ -258,7 +258,7 @@ export default class InitiativeCommand implements ICommand {
 
         output.trim();
 
-        return <MessageEmbedField[]>[
+        return <EmbedField[]>[
             {
                 name: 'Initiative List',
                 value: output
@@ -266,7 +266,7 @@ export default class InitiativeCommand implements ICommand {
         ];
     }
 
-    async endInitiative(): Promise<MessageEmbedField[]> {
+    async endInitiative(): Promise<EmbedField[]> {
         const initiative = await this.getInitiatives();
         if(initiative.state === InitiativeState.ENDED) {
             throw new Error('Initiative is not active');
@@ -281,7 +281,7 @@ export default class InitiativeCommand implements ICommand {
 
         await this.saveInitiatives(initiative);
 
-        return <MessageEmbedField[]>[
+        return <EmbedField[]>[
             {
                 name: 'Initiative Ended!',
                 value: 'Battle complete!'
@@ -289,7 +289,7 @@ export default class InitiativeCommand implements ICommand {
         ];
     }
 
-    async execute(): Promise<MessageEmbedField[]> {
+    async execute(): Promise<EmbedField[]> {
         switch(this._subCommand) {
             case 'begin':
             case 'start':

@@ -1,3 +1,5 @@
+import Logger from "../Logger";
+
 export type DiceResult = {
     diceRolls : number[];
     diceResult: number;
@@ -39,6 +41,7 @@ export class DiceRoller implements IDiceRollService {
     }
 
     public rollDice(_rollType: RollType, _numDice: number, _dieSize: number, _operator: Operator, _skillModifier: number): DiceResult {
+        Logger.Instance?.verbose(`[${DiceRoller.name}]: ${this.rollDice.name}: RollType: ${_rollType}, NumDice: ${_numDice}, DieSize: ${_dieSize}, Operator: ${_operator}, SkillModifier: ${_skillModifier}`);
         const rollArray: number[] = [];
 
         if(_rollType !== RollType.NORMAL) {
@@ -83,6 +86,8 @@ export class DiceRoller implements IDiceRollService {
             diceResult: finalResult,
             diceRolls: rollArray
         };
+
+        Logger.Instance?.verbose(`[${DiceRoller.name}]: ${this.rollDice.name}: Dice result: ${JSON.stringify(result)}`);
 
         return result;
     }

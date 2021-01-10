@@ -1,5 +1,4 @@
-import winston = require("winston");
-import { MessageEmbedField } from "discord.js";
+import { EmbedField } from "discord.js";
 
 import RollCommand from "./commands/RollCommand";
 import ICommand from "./commands/ICommand";
@@ -16,17 +15,16 @@ import { ServerMap } from "./persistence/ServerMap";
 import InitiativeCommand from "./commands/InitiativeCommand";
 import GetCharacterCommand from "./commands/GetCharacterCommand";
 import { DiceRoller } from "./commands/DiceRoller";
+import Logger from "./Logger";
 
 export default class DndBot {
 
     private _serverMaps: ServerMap[];
     private _storageClient: IStorageClient | undefined;
-    private _logger: winston.Logger;
     private _diceRoller: DiceRoller;
 
-    constructor(logger: winston.Logger) {
+    constructor() {
         this._serverMaps = [];
-        this._logger = logger;
         this._diceRoller = new DiceRoller();
         try {
             this._storageClient = new StorageClientFactory().getInstance();
@@ -83,19 +81,19 @@ export default class DndBot {
         return null;
     }
 
-    async handleMessage(message: string, userId: string, serverId?: string) : Promise<MessageEmbedField[]> {
-        this._logger.verbose(`Handling input ${message}`);
+    async handleMessage(message: string, userId: string, serverId?: string) : Promise<EmbedField[]> {
+        Logger.Instance.verbose(`[${DndBot.name}]: ${this.handleMessage.name}: Handling input ${message}`);
 
         const lowercaseMessage = message.toLowerCase();
         let cmd: ICommand = new UnknownCommand(lowercaseMessage);
 
         // Roll commands
         if(lowercaseMessage.match(/^$/)) {
-            cmd = new RollCommand(`r1d20`, this._logger, this._diceRoller);
+            cmd = new RollCommand(`r1d20`, this._diceRoller);
         }
         
         else if(lowercaseMessage.match(/^[rad]\d.*/)) {
-            cmd = new RollCommand(lowercaseMessage, this._logger, this._diceRoller);
+            cmd = new RollCommand(lowercaseMessage, this._diceRoller);
         }
 
         // Create new character
@@ -152,7 +150,7 @@ export default class DndBot {
             const char = this.getActiveCharacter(userId, serverId);
             if(char !== null) {
                 const diceRoll = StatRoll.getDiceRoll(lowercaseMessage, char);
-                cmd = new RollCommand(diceRoll, this._logger, this._diceRoller);
+                cmd = new RollCommand(diceRoll, this._diceRoller);
             }
             else {
                 throw new Error('You must have created and selected a character before rolling skill checks');
@@ -173,7 +171,7 @@ export default class DndBot {
 
         const result = await cmd.execute();
 
-        this._logger.verbose(`Command result: ${JSON.stringify(result)}`);
+        Logger.Instance.verbose(`[${DndBot.name}]: ${this.handleMessage.name}: Command result: ${JSON.stringify(result)}`);
 
         if(serverId !== undefined) {
             if(cmd instanceof SelectCharacterCommand) {

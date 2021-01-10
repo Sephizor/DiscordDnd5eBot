@@ -1,5 +1,5 @@
-import { MessageEmbedField } from "discord.js";
+import { EmbedField } from "discord.js";
 
 export default interface ICommand {
-    execute(): Promise<MessageEmbedField[]>;
+    execute(): Promise<EmbedField[]>;
 }

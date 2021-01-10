@@ -8,7 +8,6 @@ import { IDiceRollService, DiceResult } from '../commands/DiceRoller';
 
 describe('Roll Command', () => {
     let testee: RollCommand;
-    let mockLogger = Mock.ofType<Logger>();
     let mockDiceRoller: IMock<IDiceRollService>;
 
     beforeEach(() => {
@@ -26,17 +25,17 @@ describe('Roll Command', () => {
             ];
 
             it('should return error output if the supplied command is ridiculous', async () => {
-                testee = new RollCommand('rabcde12345', mockLogger.object, mockDiceRoller.object);
+                testee = new RollCommand('rabcde12345', mockDiceRoller.object);
                 expect(await testee.execute()).to.deep.equal(errorOutput);
             });
 
             it('should return error output if supplied values are zero', async () => {
-                testee = new RollCommand('r0d0-0', mockLogger.object, mockDiceRoller.object);
+                testee = new RollCommand('r0d0-0', mockDiceRoller.object);
                 expect(await testee.execute()).to.deep.equal(errorOutput);
             });
 
             it('should return error output if unknown roll type specified', async () => {
-                testee = new RollCommand('h2d10+6', mockLogger.object, mockDiceRoller.object);
+                testee = new RollCommand('h2d10+6', mockDiceRoller.object);
                 expect(await testee.execute()).to.deep.equal(errorOutput);
             });
         });
@@ -47,7 +46,7 @@ describe('Roll Command', () => {
                     diceRolls: [10, 10],
                     diceResult: 20
                 });
-                testee = new RollCommand('r2d20', mockLogger.object, mockDiceRoller.object);
+                testee = new RollCommand('r2d20', mockDiceRoller.object);
                 const result = await testee.execute();
                 expect(result.map(x => x.name)).to.deep.equal(['Result', 'Dice Roll(s)', 'Input']);
                 expect(result.map(x => x.value)).to.deep.equal([':two::zero:', '10, 10', '2d20']);
@@ -58,7 +57,7 @@ describe('Roll Command', () => {
                     diceRolls: [20],
                     diceResult: 20
                 });
-                testee = new RollCommand('r1d20', mockLogger.object, mockDiceRoller.object);
+                testee = new RollCommand('r1d20', mockDiceRoller.object);
                 const result = await testee.execute();
                 expect(result.map(x => x.name)[0]).to.equal('Critical!');
                 expect(result.map(x => x.value)[0]).to.equal('NAT :two::zero:');
@@ -69,7 +68,7 @@ describe('Roll Command', () => {
                     diceRolls: [1],
                     diceResult: 1
                 });
-                testee = new RollCommand('r1d20', mockLogger.object, mockDiceRoller.object);
+                testee = new RollCommand('r1d20', mockDiceRoller.object);
                 const result = await testee.execute();
                 expect(result.map(x => x.name)[0]).to.equal('Critical Fail!');
                 expect(result.map(x => x.value)[0]).to.equal('NAT :one:');
@@ -80,7 +79,7 @@ describe('Roll Command', () => {
                     diceRolls: [10, 10],
                     diceResult: 24
                 });
-                testee = new RollCommand('r2d20+4', mockLogger.object, mockDiceRoller.object);
+                testee = new RollCommand('r2d20+4', mockDiceRoller.object);
                 const result = await testee.execute();
                 expect(result.map(x => x.name)).to.deep.equal(['Result', 'Dice Roll(s)', 'Input']);
                 expect(result.map(x => x.value)).to.deep.equal([':two::four:', '10, 10', '2d20+4']);
@@ -91,7 +90,7 @@ describe('Roll Command', () => {
                     diceRolls: [10, 10],
                     diceResult: 20
                 });
-                testee = new RollCommand('r2d20+0', mockLogger.object, mockDiceRoller.object);
+                testee = new RollCommand('r2d20+0', mockDiceRoller.object);
                 const result = await testee.execute();
                 expect(result.map(x => x.name)).to.deep.equal(['Result', 'Dice Roll(s)', 'Input']);
                 expect(result.map(x => x.value)).to.deep.equal([':two::zero:', '10, 10', '2d20']);
@@ -102,7 +101,7 @@ describe('Roll Command', () => {
                     diceRolls: [1],
                     diceResult: -4
                 });
-                testee = new RollCommand('r1d2-5', mockLogger.object, mockDiceRoller.object);
+                testee = new RollCommand('r1d2-5', mockDiceRoller.object);
                 const result = await testee.execute();
                 expect(result.map(x => x.value)[0]).to.equal('-:four:');
             });
@@ -112,7 +111,7 @@ describe('Roll Command', () => {
                     diceRolls: [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
                     diceResult: 50
                 });
-                testee = new RollCommand('r50d6', mockLogger.object, mockDiceRoller.object);
+                testee = new RollCommand('r50d6', mockDiceRoller.object);
                 const result = await testee.execute();
                 expect(result[0].value).to.equal(':five::zero:');
                 expect(result[1].value.length).to.equal(145);
@@ -126,7 +125,7 @@ describe('Roll Command', () => {
                     diceRolls: [10, 11, 12, 13],
                     diceResult: 13
                 });
-                testee = new RollCommand('a2d20', mockLogger.object, mockDiceRoller.object);
+                testee = new RollCommand('a2d20', mockDiceRoller.object);
                 const result = await testee.execute();
                 expect(result.map(x => x.value)[0]).to.equal(':one::three:');
                 expect(result.map(x => x.value)[1]).to.equal('10, 11, 12, 13');
@@ -138,7 +137,7 @@ describe('Roll Command', () => {
                     diceRolls: [10, 11, 12, 13],
                     diceResult: 17
                 });
-                testee = new RollCommand('a2d20+4', mockLogger.object, mockDiceRoller.object);
+                testee = new RollCommand('a2d20+4', mockDiceRoller.object);
                 const result = await testee.execute();
                 expect(result.map(x => x.value)[0]).to.equal(':one::seven:');
                 expect(result.map(x => x.value)[1]).to.equal('10, 11, 12, 13');
@@ -150,7 +149,7 @@ describe('Roll Command', () => {
                     diceRolls: [10, 11, 12, 13],
                     diceResult: 13
                 });
-                testee = new RollCommand('a2d20+0', mockLogger.object, mockDiceRoller.object);
+                testee = new RollCommand('a2d20+0', mockDiceRoller.object);
                 const result = await testee.execute();
                 expect(result.map(x => x.value)[0]).to.equal(':one::three:');
                 expect(result.map(x => x.value)[1]).to.equal('10, 11, 12, 13');
@@ -162,7 +161,7 @@ describe('Roll Command', () => {
                     diceRolls: [10, 20],
                     diceResult: 20
                 });
-                testee = new RollCommand('a1d20', mockLogger.object, mockDiceRoller.object);
+                testee = new RollCommand('a1d20', mockDiceRoller.object);
                 const result = await testee.execute();
                 expect(result.map(x => x.name)[0]).to.equal('Critical!');
                 expect(result.map(x => x.value)[0]).to.equal('NAT :two::zero:');
@@ -174,7 +173,7 @@ describe('Roll Command', () => {
                     diceRolls: [1, 1],
                     diceResult: 1
                 });
-                testee = new RollCommand('a1d20', mockLogger.object, mockDiceRoller.object);
+                testee = new RollCommand('a1d20', mockDiceRoller.object);
                 const result = await testee.execute();
                 expect(result.map(x => x.name)[0]).to.equal('Critical Fail!');
                 expect(result.map(x => x.value)[0]).to.equal('NAT :one:');
@@ -186,7 +185,7 @@ describe('Roll Command', () => {
                     diceRolls: [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,5],
                     diceResult: 5
                 });
-                testee = new RollCommand('a25d6', mockLogger.object, mockDiceRoller.object);
+                testee = new RollCommand('a25d6', mockDiceRoller.object);
                 const result = await testee.execute();
                 expect(result.map(x => x.value)[0]).to.equal(':five:');
                 expect(result.map(x => x.value)[1].length).to.equal(145);
@@ -200,7 +199,7 @@ describe('Roll Command', () => {
                     diceRolls: [10, 11, 12, 13],
                     diceResult: 10
                 });
-                testee = new RollCommand('d2d20', mockLogger.object, mockDiceRoller.object);
+                testee = new RollCommand('d2d20', mockDiceRoller.object);
                 const result = await testee.execute();
                 expect(result.map(x => x.value)[0]).to.equal(':one::zero:');
                 expect(result.map(x => x.value)[1]).to.equal('10, 11, 12, 13');
@@ -212,7 +211,7 @@ describe('Roll Command', () => {
                     diceRolls: [10, 11, 12, 13],
                     diceResult: 10
                 });
-                testee = new RollCommand('d2d20+4', mockLogger.object, mockDiceRoller.object);
+                testee = new RollCommand('d2d20+4', mockDiceRoller.object);
                 const result = await testee.execute();
                 expect(result.map(x => x.value)[0]).to.equal(':one::zero:');
                 expect(result.map(x => x.value)[1]).to.equal('10, 11, 12, 13');
@@ -224,7 +223,7 @@ describe('Roll Command', () => {
                     diceRolls: [10, 11, 12, 13],
                     diceResult: 10
                 });
-                testee = new RollCommand('d2d20+0', mockLogger.object, mockDiceRoller.object);
+                testee = new RollCommand('d2d20+0', mockDiceRoller.object);
                 const result = await testee.execute();
                 expect(result.map(x => x.value)[0]).to.equal(':one::zero:');
                 expect(result.map(x => x.value)[1]).to.equal('10, 11, 12, 13');
@@ -236,7 +235,7 @@ describe('Roll Command', () => {
                     diceRolls: [20, 20],
                     diceResult: 20
                 });
-                testee = new RollCommand('d1d20', mockLogger.object, mockDiceRoller.object);
+                testee = new RollCommand('d1d20', mockDiceRoller.object);
                 const result = await testee.execute();
                 expect(result.map(x => x.name)[0]).to.equal('Critical!');
                 expect(result.map(x => x.value)[0]).to.equal('NAT :two::zero:');
@@ -248,7 +247,7 @@ describe('Roll Command', () => {
                     diceRolls: [1, 20],
                     diceResult: 1
                 });
-                testee = new RollCommand('d1d20', mockLogger.object, mockDiceRoller.object);
+                testee = new RollCommand('d1d20', mockDiceRoller.object);
                 const result = await testee.execute();
                 expect(result.map(x => x.name)[0]).to.equal('Critical Fail!');
                 expect(result.map(x => x.value)[0]).to.equal('NAT :one:');
@@ -260,7 +259,7 @@ describe('Roll Command', () => {
                     diceRolls: [5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,1],
                     diceResult: 1
                 });
-                testee = new RollCommand('d25d6', mockLogger.object, mockDiceRoller.object);
+                testee = new RollCommand('d25d6', mockDiceRoller.object);
                 const result = await testee.execute();
                 expect(result.map(x => x.value)[0]).to.equal(':one:');
                 expect(result.map(x => x.value)[1].length).to.equal(145);
