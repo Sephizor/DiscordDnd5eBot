@@ -58,6 +58,10 @@ async function handleMessage(message: Message | PartialMessage) {
         throw new Error('Discord API did not send message content');
     }
 
+    if(message.content.charAt(1) ===settings.messagePrefix) {
+        return;
+    }
+
     const addressName = message.channel.type !== 'text' ? message.author.username : message.member.displayName
 
     if(message.content.match(`^[${settings.messagePrefix}]`)) {
