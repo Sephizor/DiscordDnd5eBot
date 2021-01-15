@@ -58,7 +58,7 @@ async function handleMessage(message: Message | PartialMessage) {
         throw new Error('Discord API did not send message content');
     }
 
-    if(message.content.charAt(1) ===settings.messagePrefix) {
+    if(message.content.charAt(1) === settings.messagePrefix) {
         return;
     }
 
