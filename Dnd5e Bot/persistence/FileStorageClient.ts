@@ -36,6 +36,9 @@ export default class FileStorageClient implements IStorageClient {
         if(!this.validateFilename(fileName)) {
             return false
         }
+        if(directory !== '' && !fs.existsSync(`${this._rootDirectory}${path.sep}${directory}`)) {
+            fs.mkdirSync(`${this._rootDirectory}${path.sep}${directory}`);
+        }
         fs.writeFileSync(`${this._rootDirectory}${path.sep}${directory}${fileName}`, json);
         return fs.existsSync(`${this._rootDirectory}${path.sep}${directory}${fileName}`);
     }
