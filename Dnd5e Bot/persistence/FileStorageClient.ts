@@ -25,18 +25,25 @@ export default class FileStorageClient implements IStorageClient {
     }
 
     async save(json: string, fileName: string): Promise<boolean> {
+        let directory = '';
+
         fileName = fileName.replace('/', path.sep);
-        if(!this.validateFilename(fileName)) {
-            throw new Error(`Invalid file name: ${fileName}`);
+        if(fileName.indexOf(path.sep) !== -1) {
+            const splitFilename = fileName.split(path.sep)
+            directory = splitFilename[0] + path.sep;
+            fileName = splitFilename[1];
         }
-        fs.writeFileSync(`${this._rootDirectory}${path.sep}${fileName}`, json);
-        return fs.existsSync(`${this._rootDirectory}${path.sep}${fileName}`);
+        if(!this.validateFilename(fileName)) {
+            return false
+        }
+        fs.writeFileSync(`${this._rootDirectory}${path.sep}${directory}${fileName}`, json);
+        return fs.existsSync(`${this._rootDirectory}${path.sep}${directory}${fileName}`);
     }
 
     async fetch(fileName: string): Promise<string> {
         fileName = fileName.replace('/', path.sep);
         if(!this.validateFilename(fileName)) {
-            throw new Error(`Invalid file name: ${fileName}`);
+            return '';
         }
         const file = `${this._rootDirectory}${path.sep}${fileName}`;
         if(!fs.existsSync(file)) {
