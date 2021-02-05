@@ -44,11 +44,18 @@ export default class FileStorageClient implements IStorageClient {
     }
 
     async fetch(fileName: string): Promise<string> {
+        let directory = '';
+
         fileName = fileName.replace('/', path.sep);
+        if(fileName.indexOf(path.sep) !== -1) {
+            const splitFilename = fileName.split(path.sep)
+            directory = splitFilename[0] + path.sep;
+            fileName = splitFilename[1];
+        }
         if(!this.validateFilename(fileName)) {
             return '';
         }
-        const file = `${this._rootDirectory}${path.sep}${fileName}`;
+        const file = `${this._rootDirectory}${path.sep}${directory}${fileName}`;
         if(!fs.existsSync(file)) {
             return '';
         }
