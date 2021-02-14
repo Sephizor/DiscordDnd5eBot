@@ -1,0 +1,8 @@
+services:
+  dnd-bot:
+    build:
+      context: ./
+    volumes:
+      - character-storage:/character-storage
+volumes:
+  character-storage:
