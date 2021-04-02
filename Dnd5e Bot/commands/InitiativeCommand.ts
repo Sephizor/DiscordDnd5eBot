@@ -19,6 +19,7 @@ enum InitiativeState {
 interface ServerInitiative {
     serverId: string;
     initiatives: CharacterInitiative[];
+    pendingInitiatives: CharacterInitiative[];
     currentIndex: number;
     roundNumber: number;
     state: InitiativeState;
@@ -71,6 +72,7 @@ export default class InitiativeCommand implements ICommand {
                 initiative = <ServerInitiative> {
                     currentIndex: -1,
                     initiatives: [],
+                    pendingInitiatives: [],
                     roundNumber: 0,
                     serverId: this._serverId,
                     state: InitiativeState.PREPARING
@@ -125,13 +127,17 @@ export default class InitiativeCommand implements ICommand {
         if(initiative.state === InitiativeState.ENDED) {
             throw new Error('There is no initiative active');
         }
-
+        
         const charInit = <CharacterInitiative> {
             characterName: this._character.name,
             initiative: initRoll
         };
-
-        initiative.initiatives.push(charInit);
+        if(initiative.state === InitiativeState.IN_PROGRESS) {
+            initiative.pendingInitiatives.push(charInit);
+        }
+        else if(initiative.state === InitiativeState.PREPARING) {
+            initiative.initiatives.push(charInit);
+        }
         
         await this.saveInitiatives(initiative);
 
@@ -149,22 +155,26 @@ export default class InitiativeCommand implements ICommand {
         }
 
         const initiative = await this.getInitiatives();
-        const initRoll = this._override > 0 ? this._override : this._diceRoller.rollDice(RollType.NORMAL, 1, 20, null, 0).diceResult;
-
+        
         if(initiative.initiatives.filter(x => x.characterName === this._overrideName).length !== 0) {
             throw new Error(`${this._overrideName} is already in the initiative order`);
         }
         if(initiative.state === InitiativeState.ENDED) {
             throw new Error('There is no initiative active');
         }
-
+        
+        const initRoll = this._override > 0 ? this._override : this._diceRoller.rollDice(RollType.NORMAL, 1, 20, null, 0).diceResult;
         const monsterInit = <CharacterInitiative> {
             characterName: this._overrideName,
             initiative: initRoll
         };
 
-        initiative.initiatives.push(monsterInit);
-        
+        if(initiative.state === InitiativeState.IN_PROGRESS) {
+            initiative.pendingInitiatives.push(monsterInit);
+        }
+        else if(initiative.state === InitiativeState.PREPARING) {
+            initiative.initiatives.push(monsterInit);
+        }
         await this.saveInitiatives(initiative);
 
         return <EmbedField[]>[
@@ -183,7 +193,7 @@ export default class InitiativeCommand implements ICommand {
         const charInit = initiative.initiatives.filter(x => x.characterName === this._overrideName)[0];
         if(charInit !== undefined) {
             charInit.initiative = this._override;
-            initiative.initiatives = initiative.initiatives.sort((a, b) => (a.initiative > b.initiative) ? -1 : 1);
+            this.sortInitiatives(initiative.initiatives);
             this.saveInitiatives(initiative);
             return <EmbedField[]> [
                 {
@@ -212,10 +222,14 @@ export default class InitiativeCommand implements ICommand {
 
         if(initiative.roundNumber === 0) {
             initiative.initiatives = initiative.initiatives.sort((a, b) => (a.initiative > b.initiative) ? -1 : 1);
+            initiative.state = InitiativeState.IN_PROGRESS;
         }
 
         initiative.currentIndex++;
         if(initiative.currentIndex === initiative.initiatives.length || initiative.roundNumber === 0) {
+            initiative.initiatives = initiative.initiatives.concat(initiative.pendingInitiatives);
+            initiative.pendingInitiatives = [];
+            this.sortInitiatives(initiative.initiatives);
             initiative.currentIndex = 0;
             initiative.roundNumber++;
             fields.push(<EmbedField>{
@@ -242,7 +256,7 @@ export default class InitiativeCommand implements ICommand {
             throw new Error('There is no initiative active');
         }
 
-        initiative.initiatives = initiative.initiatives.sort((a, b) => (a.initiative > b.initiative) ? -1 : 1);
+        this.sortInitiatives(initiative.initiatives);
 
         let output = '';
         let i = 0;
@@ -277,6 +291,7 @@ export default class InitiativeCommand implements ICommand {
 
         initiative.currentIndex = -1;
         initiative.initiatives = [];
+        initiative.pendingInitiatives = [];
         initiative.roundNumber = 0;
 
         await this.saveInitiatives(initiative);
@@ -309,5 +324,9 @@ export default class InitiativeCommand implements ICommand {
             default:
                 throw new Error('Invalid initiative command');
         }
+    }
+
+    private sortInitiatives(initiatives: Array<CharacterInitiative>): void {
+        initiatives = initiatives.sort((a, b) => (a.initiative > b.initiative) ? -1 : 1);
     }
 }
